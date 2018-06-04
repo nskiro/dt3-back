@@ -1,0 +1,29 @@
+{
+  "name": "ducthanh3",
+  "version": "1.0.0",
+  "license" : "(ISC OR GPL-3.0)",
+  "scripts": {
+    "server": "nodemon server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "debug": "^2.6.9",
+    "directory-tree": "^2.1.0",
+    "ejs": "^2.6.1",
+    "eslint": "^4.19.1",
+    "express": "^4.16.3",
+    "express-fileupload": "^0.4.0",
+    "http-errors": "^1.6.3",
+    "immutability-helper": "^2.7.0",
+    "jade": "^1.11.0",
+    "jsonwebtoken": "^8.2.1",
+    "lodash": "^4.17.10",
+    "moment": "^2.22.2",
+    "mongoose": "^5.0.0",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.17.3",
+    "xlsx": "^0.12.10"
+  }
+}
