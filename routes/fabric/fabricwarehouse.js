@@ -129,7 +129,7 @@ router.get('/getimports', async (req, res, next) => {
 
         }
 
-        console.log('data_return ==>' + JSON.stringify(data_return));
+       // console.log('data_return ==>' + JSON.stringify(data_return));
         return res.status(200).send(data_return);
     } catch (ex) {
         return res.status(500).send(ex);
@@ -189,14 +189,12 @@ router.get('/getexports', async (req, res, next) => {
         dates.$lt = fdate;
         delete req.query.to_date;
     }
-    //console.log('Tới day 0');
 
     if (req.query.provider_name) {
         if (req.query.provider_name.length !== 0) { qr_import.provider_name = req.query.provider_name; }
     }
 
     if (!_.isEmpty(dates)) { qr_import.inputdate_no = dates; }
-    //console.log('Tới day 5');
 
     let data_imports = {};
     let data_imports_detail = {};
@@ -250,7 +248,7 @@ router.get('/getexports', async (req, res, next) => {
 
     }
 
-    console.log('data_return ==>' + JSON.stringify(data_return));
+   // console.log('data_return ==>' + JSON.stringify(data_return));
     return res.status(200).send(data_return);
 
 });
@@ -360,7 +358,7 @@ router.get('/getinventorytrans', async (req, res, next) => {
     }
 
     //
-    console.log('q_export_details =>' + JSON.stringify(q_export_details));
+    //console.log('q_export_details =>' + JSON.stringify(q_export_details));
     for (let i = 0; i < q_export_details.length; i++) {
         let row = q_export_details[i];
         let im_data = {};

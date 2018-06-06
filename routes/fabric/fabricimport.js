@@ -1,14 +1,16 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var router = express.Router();
+var moment = require('moment');
 
 const FabricImport = require('../../Schema/Fabric/FabricImport');
 const FabricImportDetail = require('../../Schema/Fabric/FabricImportDetail');
 const FabricWarehouse = require('../../Schema/Fabric/FabricWarehouse');
 const FabricWarehouseTran = require('../../Schema/Fabric/FabricWarehouseTran');
+const _ = require('lodash');
 
 router.get('/get', (req, res, next) => {
-    console.log(req.query);
+    //console.log(req.query);
     if (req.query.provider_name && req.query.provider_name === 'A') {
         delete req.query.provider_name;
     }
@@ -29,10 +31,10 @@ router.get('/get', (req, res, next) => {
     if (req.query.orderid != undefined && req.query.orderid.length === 0) { delete req.query.orderid; }
 
     req.query.record_status = 'O';
-    console.log('query ===> ' + JSON.stringify(req.query));
+    //console.log('query ===> ' + JSON.stringify(req.query));
 
     FabricImport.find(req.query)
-        .sort({ 'inputdate_no': 'desc' })
+        .sort({ 'create_date': 'desc' })
         .exec((err, fabricwarehouse) => {
             if (!err) {
                 return res.status(200).send(fabricwarehouse);
@@ -84,7 +86,7 @@ createnewImport = (data_com, data_detail) => {
 
         details: data_detail
     };
-    console.log('create import  =>' + fabs);
+    ///console.log('create import  =>' + fabs);
     return FabricImport.create(fabs);
 }
 
@@ -118,6 +120,7 @@ createConditionFindTypeAndColor = (data_detail) => {
 
 createDataImForTrans = (importid, row) => {
     let tran = {
+        // create_date: row.create_date,
         tran_type_id: importid,
         tran_type: 'Nhập',
 
@@ -164,7 +167,7 @@ router.post('/add/', async (req, res, next) => {
                         let tran = createDataImForTrans(create_import._id, row);
                         tran.roll_after = parseFloat(row.roll);
                         tran.met_after = parseFloat(row.met);
-                        console.log(JSON.stringify(tran));
+                        //console.log(JSON.stringify(tran));
                         const write_tran = await createnewTransaction(tran);
                     }
                 }
@@ -175,8 +178,8 @@ router.post('/add/', async (req, res, next) => {
                     //create transaction
                     if (!create_import.err) {
                         // row_updated = update_row.data;
-                        let tran = createDataForTrans(create_import._id, row);
-                        tran.roll_after = parseFloatupdate_r(ow.roll) + parseFloat(row.roll);
+                        let tran = createDataImForTrans(create_import._id, row);
+                        tran.roll_after = parseFloat(update_row.roll) + parseFloat(row.roll);
                         tran.met_after = parseFloat(update_row.met) + parseFloat(row.met);
                         const write_tran = await createnewTransaction(tran);
                     }
@@ -194,7 +197,7 @@ removeOldImport = (importid) => {
 }
 
 removeOldImportDetail = (importid) => {
-    console.log('remove detail');
+    console.log('remove detail' + importid);
     return FabricImportDetail.update({ importid: importid }, { record_status: 'C', update_date: new Date() }, { multi: true });
 
 }
@@ -203,85 +206,86 @@ findDetailByImportId = (importid) => {
     return FabricImportDetail.find({ importid: importid });
 }
 
+findWarehouseTran =(req)=>{
+    return FabricWarehouseTran.find(req);
+}
+
+findImportByImportId = (importid) => {
+    var o_id = new mongoose.mongo.ObjectID(importid);
+    return FabricImport.find({ _id: o_id });
+}
+
 /*
-router.post(`/update/:id/`, async (req, res, next) => {
-    let id = req.params.id;
-    console.log('id = >' + id);
-    let data_com = req.body.data;
-    let data_detail = req.body.detail;
-    console.log('request => ' + JSON.stringify(data_com));
-    console.log('params => ' + JSON.stringify(data_detail));
-    var data;
-    data = {
-        update_date: new Date(),
-        record_status: 'C'
-    };
-
-    //remove 
-    const find_details = await findDetailByImportId(id);
-    console.log('find_details ->' + JSON.stringify(find_details));
-    if (!find_details.err) {
-        for (let i = 0; i < find_details.length; i++) {
-            let r = find_details[i];
-            const update_row = await updateWarehouse(r.fabric_type, r.fabric_color, -r.met, -r.roll);
-        }
-    }
-    const re_imp = await removeOldImport(id);
-    const re_imp_detail = await removeOldImportDetail(id);
-    console.log('remove detail -> result ' + JSON.stringify(re_imp_detail));
-
-    let conditions = createConditionFindTypeAndColor(data_detail);//{ $or: type_colors };
-    //create new
-    FabricWarehouse.find(conditions)
+router.post('/checktranlog/', async (req, res, next) => {
+    FabricImportDetail.find({})
+        .sort({'create_date':'asc'})
         .exec(async (err, fabricwarehouse) => {
+            let count=0;
+            let imports_id=[];
+            let detail_not_found=[];
             if (!err) {
-                // kiem tra cap type-color khong ton tai
-                let pairs = checkPairTypeAndColor(data_detail, fabricwarehouse);
-                // neu chua co thi tao repo cho no luon
-                const newWarehouse = await creatnewWarehouse(pairs.notfound);
-                const create_import = await createnewImport(data_com, data_detail);
-                const create_import_detail = await createnewImportDetail(create_import._id, data_detail);
+                let details =[];
+               
+                for( let i =0;i<fabricwarehouse.length;i++){
+                    let row = fabricwarehouse[i];
+                    //check trong tranlog
 
-                //update value
-                for (let i = 0; i < pairs.found.length; i++) {
-                    let row = pairs.found[i];
-                    const update_row = await updateWarehouse(row.fabric_type, row.fabric_color, row.met, row.roll);
-                    //console.log('update result => ' + JSON.stringify(update_row));
-                    //console.log('create import result =>'+JSON.stringify(create_import));
-                    //create transaction
-                    if (!create_import.err) {
-                        // row_updated = update_row.data;
-                        let tran = {
-                            tran_type_id: create_import._id,
-                            tran_type: 'Nhập',
-                            roll: row.roll,
-                            met: row.met,
-                            roll_after: update_row.roll + row.roll,
-                            met_after: update_row.met + row.met,
-                        };
-                        const write_tran = await createnewTransaction(tran);
+                    let conditions ={
+                        tran_type:'Nhập',
+                        tran_type_id:row.importid,
+                        fabric_color: row.fabric_color,
+                        fabric_type:row.fabric_type,
+                        met: row.met,
+                        roll: row.roll,
                     }
+                    let rs_find = await findWarehouseTran(conditions);
+                    if(_.isEmpty(rs_find)){
+                        //console.log(JSON.stringify(rs_find));
+                       count++;
+                       let rs_findImport= await findImportByImportId (row.importid);
+                       //console.log(rs_findImport);
+                       conditions.record_status=rs_findImport[0].record_status;
+                       conditions.create_date =new Date(rs_findImport[0].create_date);
+                       conditions.create_date_str =moment(rs_findImport[0].create_date).format('MM/DD/YYYY HH:mm:ss');
+
+                        detail_not_found.push(row);
+                       
+
+                        if(imports_id.indexOf(row.importid)===-1){
+                            imports_id.push(row.importid);
+                        }
+                    }
+
                 }
-                return res.status(200).send({ valid: true });
             }
-            return res.status(500).send({ valid: false, error: err });
-        })
+            console.log('Count  = '+ count);
+
+            //-> sort theo thoi gian
+            detail_not_found.sort ((a,b) =>{
+                return a.create_date>b.create_date;
+            });
+
+            for(let i=0;i<detail_not_found.length;i++){
+                console.log(JSON.stringify(detail_not_found[i]));
+                let row = detail_not_found[i];
+                //-
+                
+                
+               const update_row = await updateWarehouse(row.fabric_type, row.fabric_color, row.met, row.roll);
+
+                let tran = createDataImForTrans(row.importid, row);
+                tran.roll_after = parseFloat(update_row.roll) + parseFloat(row.roll);
+                tran.met_after = parseFloat(update_row.met) + parseFloat(row.met);
+                const write_tran = await createnewTransaction(tran);
+                console.log(tran);
+            }
 
 
-    //return res.status(200).send({});
-    /*
-    FabricImport.findByIdAndUpdate(id, data, (err, ftype) => {
-        if (!err) {
-            return res.status(200).send(ftype);
-        }
-        console.log(err);
-        return res.status(500).send(ftype);
-    });
-    
+            console.log(JSON.stringify(imports_id)+"Lenght = "+imports_id.length);
+            return res.status(200).send({ valid: true });
 
-
+        });
 });
-
 */
 
 module.exports = router;

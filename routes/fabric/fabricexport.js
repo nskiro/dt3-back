@@ -38,8 +38,9 @@ router.get('/get', (req, res, next) => {
     if (!_.isEmpty(cond_orderid)) { req.query['details.orderid'] = cond_orderid; }
     if (!_.isEmpty(cond_dates)) { req.query['inputdate_no'] = cond_dates; }
 
-    console.log('req.query==>' + JSON.stringify(req.query));
+    //console.log('req.query==>' + JSON.stringify(req.query));
     FabricExport.find(req.query)
+        .sort({'create_date':'desc'})
         .exec((err, fabricwarehouse) => {
             console.log('err = ' + err);
             if (!err) {
@@ -99,7 +100,7 @@ createnewExportDetail = (exportid, data_detail) => {
         data_detail[i]._id = new mongoose.mongo.ObjectId();
         data_detail[i].exportid = exportid;
     }
-    console.log(data_detail);
+    //console.log(data_detail);
     return FabricExportDetail.create(data_detail);
 }
 createConditionFindTypeAndColor = (data_detail) => {
@@ -201,7 +202,7 @@ removeOldExport = (importid) => {
 }
 
 removeOldExportDetail = (importid) => {
-    console.log('remove detail');
+    console.log('remove detail '+ importid);
     return FabricExportDetail.update({ exportid: importid }, { record_status: 'C', update_date: new Date() }, { multi: true });
 }
 
@@ -213,8 +214,8 @@ router.post(`/update/:id/`, async (req, res, next) => {
     console.log('id = >' + id);
     let data_com = req.body.data;
     let data_detail = req.body.detail;
-    console.log('request => ' + JSON.stringify(data_com));
-    console.log('params => ' + JSON.stringify(data_detail));
+    //console.log('request => ' + JSON.stringify(data_com));
+    //console.log('params => ' + JSON.stringify(data_detail));
 
     let conditions = createConditionFindTypeAndColor(data_detail);
 
@@ -241,17 +242,17 @@ router.post(`/update/:id/`, async (req, res, next) => {
 
                 //create new
                 const create_export = await createnewExport(data_com, data_detail);
-                console.log('create export result =>' + JSON.stringify(create_export));
-                console.log('create_export id ==>' + create_export._id);
+                //console.log('create export result =>' + JSON.stringify(create_export));
+               // console.log('create_export id ==>' + create_export._id);
 
                 const create_export_detail = await createnewExportDetail(create_export._id, data_detail);
-                console.log('create export detail  result =>' + JSON.stringify(create_export_detail));
+               // console.log('create export detail  result =>' + JSON.stringify(create_export_detail));
 
                 //update value
                 for (let i = 0; i < pairs.found.length; i++) {
                     let row = pairs.found[i];
                     const update_row = await updateWarehouse(row.fabric_type, row.fabric_color, -row.met, -row.roll);
-                    console.log('update result => ' + JSON.stringify(update_row));
+                    //console.log('update result => ' + JSON.stringify(update_row));
                     //create transaction
                     if (!create_export.err) {
                         // row_updated = update_row.data;
@@ -275,6 +276,5 @@ router.post(`/update/:id/`, async (req, res, next) => {
 
 
 });
-
 
 module.exports = router;
