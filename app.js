@@ -10,22 +10,6 @@ const db = require('./db');
 // main route
 const uploadRouter = require('./routes/upload');
 const userRouter = require('./routes/user');
-const qaRouter = require('./routes/qaqc');
-const planningRouter = require('./routes/planning');
-const markerRouter = require('./routes/marker');
-const sampleRouter = require('./routes/sample');
-const cuttingRouter = require('./routes/cutting');
-const numberingRouter = require('./routes/numbering');
-const productionRouter = require('./routes/production');
-const embroideryRouter = require('./routes/embroidery');
-const packagingRouter = require('./routes/packaging');
-const fabricqcRouter = require('./routes/fabricqc');
-const complianceRouter = require('./routes/compliance');
-const trimRouter = require('./routes/trim');
-const administrationRouter = require('./routes/administration');
-const aqlRouter = require('./routes/aql');
-const sewingPlanRouter = require('./routes/sewingplan');
-const imexRouter = require('./routes/imex');
 
 const fabricproviderRouter =  require('./routes/fabric/fabricprovider');
 const fabriccolorRouter =require('./routes/fabric/fabriccolor');
@@ -73,22 +57,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/upload',uploadRouter);
-app.use('/api/qaqc',qaRouter);
-app.use('/api/planning',planningRouter);
-app.use('/api/marker',markerRouter);
-app.use('/api/sample',sampleRouter);
-app.use('/api/cutting',cuttingRouter);
-app.use('/api/numbering',numberingRouter);
-app.use('/api/production',productionRouter);
-app.use('/api/embroidery',embroideryRouter);
-app.use('/api/packaging',packagingRouter);
-app.use('/api/fabricqc',fabricqcRouter);
-app.use('/api/compliance',complianceRouter);
-app.use('/api/trim',trimRouter);
-app.use('/api/administration',administrationRouter);
-app.use('/api/aql',aqlRouter);
-app.use('/api/sewingplan',sewingPlanRouter);
-app.use('/api/imex',imexRouter);
 
 app.use('/api/fabric/provider',fabricproviderRouter);
 app.use('/api/fabric/type',fabrictypeRouter);
