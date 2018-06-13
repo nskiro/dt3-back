@@ -29,4 +29,35 @@ router.post('/update-dept-info', (req, res, next) => {
     return res.status(200).json(req.body);
 });
 
+
+router.get('/search',(req, res, next) => {
+    console.log(req.query);
+    user.find(req.query)
+    .sort({ 'username': 'asc' })
+    .exec((err, users) => {
+        if (!err) {
+            return res.status(200).send(users);
+        }
+        return res.status(500).send(err);
+    })
+});
+
+//change password
+/*
+router.post('/changepass',(req, res, next) => {
+    
+});
+*/
+//add new a user
+/*
+router.post('/add',(req, res, next) => {
+    
+});
+*/
+//update a user
+/*
+router.post('/update/:id',(req, res, next) => {
+    
+});
+*/
 module.exports = router;
