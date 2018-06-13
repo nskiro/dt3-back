@@ -29,7 +29,7 @@ router.post('/add', (req, res, next) => {
 
 router.put('/update', (req, res, next) => {
     console.log(req.body);
-    user.findByIdAndUpdate(req.body.id, { user_name: req.body.userName, update_date: new Date() }, { new: true }, (err, doc) => {
+    user.findByIdAndUpdate(req.body.id, { ...req.body, update_date: new Date() }, { new: true }, (err, doc) => {
         if (!err) {
             return res.status(200).send(doc);
         }
