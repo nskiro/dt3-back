@@ -18,8 +18,8 @@ const fabricexportRouter =require('./routes/fabric/fabricexport');
 const fabricwarehouseRouter =require('./routes/fabric/fabricwarehouse');
 
 // admin route
-const groupRoute = require('./routes/admin/group');
-const roleRoute = require('./routes/admin/role');
+const groupRoute = require('./routes/auth/group');
+const roleRoute = require('./routes/auth/role');
 
 const app = express();
 
