@@ -6,10 +6,9 @@ const cors = require('cors');
 const logger = require('morgan');
 const fileUpload = require('express-fileupload');
 const jwt = require('./helper');
-const db = require('./db');
 // main route
 const uploadRouter = require('./routes/upload');
-const userRouter = require('./routes/user');
+const authRouter = require('./routes/auth');
 
 const fabricproviderRouter =  require('./routes/fabric/fabricprovider');
 const fabriccolorRouter =require('./routes/fabric/fabriccolor');
@@ -17,6 +16,10 @@ const fabrictypeRouter =require('./routes/fabric/fabrictype');
 const fabricimportRouter =require('./routes/fabric/fabricimport');
 const fabricexportRouter =require('./routes/fabric/fabricexport');
 const fabricwarehouseRouter =require('./routes/fabric/fabricwarehouse');
+
+// admin route
+const groupRoute = require('./routes/admin/group');
+const roleRoute = require('./routes/admin/role');
 
 const app = express();
 
@@ -36,7 +39,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'upload')));
 app.use(express.static(path.join(__dirname, 'client')));
-app.use('/user', userRouter);
+app.use('/user', authRouter);
+app.use('/api/admin/group', groupRoute);
+app.use('/api/admin/role', roleRoute);
 // route middleware to verify a token
 app.use((req, res, next) => {
   console.log(req.path);

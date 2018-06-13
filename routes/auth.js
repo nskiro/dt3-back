@@ -3,8 +3,7 @@ var mongoose = require('mongoose');
 var router = express.Router();
 var jwt = require('../helper');
 
-const user = require('../Schema/User/User');
-const deptInfo = require('../Schema/DepartmentInfo/DepartmentInfo');
+const user = require('../Schema/Auth/User');
 
 router.post('/login', (req, res, next) => {
     user.findOne({ username: req.body.username, password: req.body.password }, (err, objUser) => {
@@ -23,10 +22,6 @@ router.post('/login', (req, res, next) => {
             return res.status(500).send("User not found, please try again");
         }
     });
-});
-
-router.post('/update-dept-info', (req, res, next) => {
-    return res.status(200).json(req.body);
 });
 
 module.exports = router;
