@@ -4,6 +4,8 @@ const userSchema = new mongoose.Schema({
     fullname:{type:String,default:null},
     password: String,
     dept: String,
+    group: [{type: mongoose.Schema.Types.ObjectId, ref: 'groups'}],
+    role: [{type: mongoose.Schema.Types.ObjectId, ref: 'roles'}],
     create_date:{type:Date, default:new Date()},
     update_date:{type:Date, default:null},
     last_login:{type:Date, default:null},
