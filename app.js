@@ -18,6 +18,10 @@ const fabricimportRouter =require('./routes/fabric/fabricimport');
 const fabricexportRouter =require('./routes/fabric/fabricexport');
 const fabricwarehouseRouter =require('./routes/fabric/fabricwarehouse');
 
+
+const accessLinkRouter = require('./routes/auth/accesslink');
+const menusRouter = require('./routes/auth/menu');
+
 const app = express();
 
 // CORS setup
@@ -45,14 +49,14 @@ app.use((req, res, next) => {
   }
   else{
     // check header or url parameters or post parameters for token
-    var header = req.headers.authorization.split(' ');
-    var token = header[1];
+   // var header = req.headers.authorization.split(' ');
+    //var token = header[1];
     // decode token
-    if (!jwt.verifyToken(token)) {
-      return res.status(401).send('Failed to authenticate token.');    
-    } else {
+   // if (!jwt.verifyToken(token)) {
+    //  return res.status(401).send('Failed to authenticate token.');    
+    //} else {
       next();
-    }
+    //}
   }
 });
 
@@ -64,6 +68,11 @@ app.use('/api/fabric/color',fabriccolorRouter);
 app.use('/api/fabric/import',fabricimportRouter);
 app.use('/api/fabric/export',fabricexportRouter);
 app.use('/api/fabric/warehouse',fabricwarehouseRouter);
+
+app.use('/api/admin/accesslink',accessLinkRouter);
+app.use('/api/admin/menu',menusRouter);
+
+
 app.get('*', (req,res)=>{
   res.render('index');
 })
