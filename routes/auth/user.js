@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-const role = require('../../Schema/Auth/Role');
+const user = require('../../Schema/Auth/User');
 
 router.get('/', (req, res, next) => {
-    role.find({ record_status: 'O' }, (err, docs) => {
+    user.find({ record_status: 'O' }, (err, docs) => {
         if (!err) {
             return res.status(200).send(docs);
         }
@@ -14,12 +14,12 @@ router.get('/', (req, res, next) => {
 
 router.post('/add', (req, res, next) => {
     console.log(req.body);
-    const roleObj = {
-        role_name: req.body.roleName,
+    const userObj = {
+        ...req.body,
         create_date: new Date()
     };
 
-    role.create(roleObj, (err, doc) => {
+    user.create(userObj, (err, doc) => {
         if (!err) {
             return res.status(200).send(doc);
         }
@@ -29,7 +29,7 @@ router.post('/add', (req, res, next) => {
 
 router.put('/update', (req, res, next) => {
     console.log(req.body);
-    role.findByIdAndUpdate(req.body.id, { role_name: req.body.roleName, update_date: new Date() }, { new: true }, (err, doc) => {
+    user.findByIdAndUpdate(req.body.id, { ...req.body, update_date: new Date() }, { new: true }, (err, doc) => {
         if (!err) {
             return res.status(200).send(doc);
         }
@@ -39,15 +39,15 @@ router.put('/update', (req, res, next) => {
 
 router.delete('/delete', (req, res, next) => {
     console.log(req.body);
-    // role.deleteMany({_id: { $in: req.body.roleIds}}, (err) => {
+    // user.deleteMany({_id: { $in: req.body.userIds}}, (err) => {
     //     if (!err) {
-    //         return res.status(200).send(req.body.roleIds);
+    //         return res.status(200).send(req.body.userIds);
     //     }
     //     return res.status(500).send(err);
     // });
-    role.updateMany({ _id: { $in: req.body.roleIds } }, { record_status: 'C' }, (err, raw) => {
+    user.updateMany({ _id: { $in: req.body.userIds } }, { record_status: 'C' }, (err, raw) => {
         if (!err) {
-            return res.status(200).send(req.body.roleIds);
+            return res.status(200).send(req.body.userIds);
         }
         return res.status(500).send(err);
     });
