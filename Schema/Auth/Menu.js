@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId
+
 let menu = new mongoose.Schema({
     menu_label: { type: String, default: null },
     menu_parent_id: { type: ObjectId, default: null },

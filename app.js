@@ -18,6 +18,10 @@ const fabricimportRouter =require('./routes/fabric/fabricimport');
 const fabricexportRouter =require('./routes/fabric/fabricexport');
 const fabricwarehouseRouter =require('./routes/fabric/fabricwarehouse');
 
+
+const accessLinkRouter = require('./routes/auth/accesslink');
+const menusRouter = require('./routes/auth/menu');
+
 // admin route
 const groupRoute = require('./routes/auth/group');
 const roleRoute = require('./routes/auth/role');
@@ -71,6 +75,10 @@ app.use('/api/fabric/color',fabriccolorRouter);
 app.use('/api/fabric/import',fabricimportRouter);
 app.use('/api/fabric/export',fabricexportRouter);
 app.use('/api/fabric/warehouse',fabricwarehouseRouter);
+
+app.use('/api/admin/accesslink',accessLinkRouter);
+app.use('/api/admin/menu',menusRouter);
+
 app.get('*', (req,res)=>{
   res.render('index');
 })
