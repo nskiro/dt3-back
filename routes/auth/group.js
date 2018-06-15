@@ -4,12 +4,15 @@ var router = express.Router();
 const group = require('../../Schema/Auth/Group');
 
 router.get('/', (req, res, next) => {
-    group.find({ record_status: 'O' }, (err, docs) => {
-        if (!err) {
-            return res.status(200).send(docs);
-        }
-        return res.status(500).send(err);
-    });
+    group.find({ record_status: 'O' })
+        .populate('role')
+        .exec((err, doc) => {
+            if (!err) {
+
+                return res.status(200).send(doc);
+            }
+            return res.status(500).send(err);
+        });
 });
 
 router.post('/add', (req, res, next) => {
@@ -29,12 +32,27 @@ router.post('/add', (req, res, next) => {
 
 router.put('/update', (req, res, next) => {
     console.log(req.body);
-    group.findByIdAndUpdate(req.body.id, { group_name: req.body.groupName, update_date: new Date() }, { new: true }, (err, doc) => {
-        if (!err) {
-            return res.status(200).send(doc);
-        }
-        return res.status(500).send(err);
-    })
+    group.findByIdAndUpdate(req.body.id, { group_name: req.body.groupName, update_date: new Date() }, { new: true })
+        .populate('role')
+        .exec((err, doc) => {
+            if (!err) {
+
+                return res.status(200).send(doc);
+            }
+            return res.status(500).send(err);
+        });
+});
+
+router.put('/addrole', (req, res, next) => {
+    group.findByIdAndUpdate(req.body.id, { role: req.body.roleId, update_date: new Date() }, { new: true })
+        .populate('role')
+        .exec((err, doc) => {
+            if (!err) {
+
+                return res.status(200).send(doc);
+            }
+            return res.status(500).send(err);
+        });
 });
 
 router.delete('/delete', (req, res, next) => {
