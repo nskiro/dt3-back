@@ -34,21 +34,18 @@ router.post('/add/', (req, res, next) => {
 });
 
 router.post(`/update/:id/`, (req, res, next) => {
-    let id = req.params.id;
-    console.log('id = >' + id);
-
+    console.log(req.params);
     let cond ={
         _id: req.params.id,
-        _v: req.params._v
+        __v: req.body.v
     }
-    
+    console.log('update with conditions  ==>' + JSON.stringify(cond));
     let data = {
         name: req.body.name,
         des: req.body.des,
         update_date: new Date(),
         $inc: { __v: 1 }
     };
-
     AccessLink.findByIdAndUpdate(cond, data, (err, data) => {
         if (!err) {
             return res.status(200).send({ valid: true, data: data });

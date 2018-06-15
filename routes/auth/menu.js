@@ -52,7 +52,7 @@ router.get('/get', (req, res, next) => {
 })
 
 router.get('/getwithlabels', (req, res, next) => {
-    req.query.record_status = 'O';
+    // req.query.record_status = 'O';
     let cond = { ...req.query };
     if (cond.menu_parent) {
         cond.menu_parent_id = new mongoose.Types.ObjectId(cond.menu_parent);
@@ -76,13 +76,12 @@ router.get('/getwithlabels', (req, res, next) => {
                     data_returned.push(item);
                 }
                 data_returned.sort((a, b) => {
-                   // console.log('a->'+"a".localeCompare('b'));
-                   let a_p_label =a.menu_parent_label+"";
-                   let b_p_label =b.menu_parent_label+"";
+                    let a_p_label = a.menu_parent_label + "";
+                    let b_p_label = b.menu_parent_label + "";
                     if (a_p_label.localeCompare(b_p_label) === 1) { return -1; }
                     else if (a_p_label.localeCompare(b_p_label) === 0) {
-                        let a_label=a.menu_label+"";
-                        let b_label=b.menu_label+"";
+                        let a_label = a.menu_label + "";
+                        let b_label = b.menu_label + "";
                         return (a_label.localeCompare(b_label));
                     }
                     return 1;
@@ -129,22 +128,17 @@ router.post('/add/', (req, res, next) => {
     let ms = {};
     try {
         ms.menu_label = req.body.menu_label;
-        ms.access_link_id = new mongoose.Types.ObjectId(req.body.access_link);
+        if (req.body.access_link) { ms.access_link_id = new mongoose.Types.ObjectId(req.body.access_link); }
+        else { ms.access_link_id= null; }
+
+        if (req.body.menu_parent) { ms.menu_parent_id = new mongoose.Types.ObjectId(req.body.menu_parent); }
+        else { ms.menu_parent_id = null; }
     } catch (ex) {
         console.log(ex);
         return res.status(200).send({ valid: false, message: ex });
     }
 
-    if (req.body.menu_parent) {
-        try {
-            ms.menu_parent_id = new mongoose.Types.ObjectId(req.body.menu_parent);
-        } catch (ex) {
-            console.log(ex);
-            return res.status(200).send({ valid: false, message: ex });
-        }
-    }
     Menus.create(ms, (err, ac_link) => {
-        console.log(err);
         if (!err) {
             return res.status(200).send({ valid: true, data: ms });
         }
@@ -152,18 +146,74 @@ router.post('/add/', (req, res, next) => {
     })
 });
 
-router.post('/addsubmenu/', (req, res, next) => {
-    let ms = {
-        menu_label: req.body.menu_label,
-        access_link_id: req.body.access_link_id
+
+router.post(`/update/:id/`, (req, res, next) => {
+    let id = req.params.id;
+    let cond = { _id: new mongoose.Types.ObjectId(req.params.id), __v: req.params.v };
+    let data = {
+        update_date: new Date(),
+        $inc: { __v: 1 }
     };
-    Menus.create(ms, (err, ac_link) => {
-        console.log(err);
+
+    try {
+        data.menu_label = req.body.menu_label;
+        if(req.body.access_link){ data.access_link_id = new mongoose.Types.ObjectId(req.body.access_link);}
+        else {data.access_link_id=null;}
+
+        if (req.body.menu_parent) { data.menu_parent_id = new mongoose.Types.ObjectId(req.body.menu_parent); }
+        else {data.menu_parent_id=null;}
+    } catch (ex) {
+        console.log(ex);
+        return res.status(200).send({ valid: false, message: ex });
+    }
+    console.log(data);
+    Menus.findByIdAndUpdate(cond, data, (err, ms) => {
+        if (!err) {
+
+            return res.status(200).send({ valid: true, data: ms });
+        }
+        return res.status(200).send({ valid: false, message: err });
+
+    })
+});
+
+router.post(`/enable/:id/`, (req, res, next) => {
+    let id = req.params.id;
+    let cond = { _id: new mongoose.Types.ObjectId(req.params.id), __v: req.params.v };
+    let data = {
+        record_status: 'O',
+        update_date: new Date(),
+        $inc: { __v: 1 }
+    };
+
+    Menus.findByIdAndUpdate(cond, data, (err, ms) => {
         if (!err) {
             return res.status(200).send({ valid: true, data: ms });
         }
         return res.status(200).send({ valid: false, message: err });
+
     })
 });
+
+
+router.post(`/disable/:id/`, (req, res, next) => {
+    let id = req.params.id;
+    let cond = { _id: new mongoose.Types.ObjectId(req.params.id), __v: req.params.__v };
+    let data = {
+        record_status: 'C',
+        update_date: new Date(),
+        $inc: { __v: 1 }
+    };
+    //return res.status(200).send({ valid: true, data: [] });
+    Menus.findByIdAndUpdate(cond, data, (err, ms) => {
+        if (!err) {
+            return res.status(200).send({ valid: true, data: ms });
+        }
+        return res.status(200).send({ valid: false, message: err });
+
+    });
+
+});
+
 
 module.exports = router;
