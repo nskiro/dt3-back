@@ -24,6 +24,7 @@ copyMenuData = (mi) => {
         menu_label: mi.menu_label,
         menu_parent_id: mi.menu_parent_id,
         access_link_id: mi.access_link_id,
+        com_view: mi.com_view,
         create_date: mi.create_date,
         update_date: mi.update_date,
         record_status: mi.record_status,
@@ -128,6 +129,7 @@ router.post('/add/', (req, res, next) => {
     let ms = {};
     try {
         ms.menu_label = req.body.menu_label;
+        ms.com_view=req.body.com_view;
         if (req.body.access_link) { ms.access_link_id = new mongoose.Types.ObjectId(req.body.access_link); }
         else { ms.access_link_id= null; }
 
@@ -152,6 +154,7 @@ router.post(`/update/:id/`, (req, res, next) => {
     let cond = { _id: new mongoose.Types.ObjectId(req.params.id), __v: req.params.v };
     let data = {
         update_date: new Date(),
+        com_view:req.body.com_view,
         $inc: { __v: 1 }
     };
 
