@@ -19,15 +19,23 @@ findMenuChildsByParent = (parent_id) => {
     return Menus.find({ menu_parent_id: new mongoose.mongo.ObjectID(parent_id) });
 }
 
+findMenuRoot  =() =>{
+    return Menus.find({record_status:'O', menu_parent_id:null});
+}
+
+findMenus = () =>{
+    return Menus.find({record_status:'O'});
+}
 copyMenuData = (mi) => {
     let item = {
         menu_label: mi.menu_label,
         menu_parent_id: mi.menu_parent_id,
         access_link_id: mi.access_link_id,
-        com_view: mi.com_view,
         create_date: mi.create_date,
         update_date: mi.update_date,
         record_status: mi.record_status,
+        key:mi._id,
+        title: mi.menu_label,
         _id: mi._id,
         __v: mi.__v
     };
@@ -129,7 +137,6 @@ router.post('/add/', (req, res, next) => {
     let ms = {};
     try {
         ms.menu_label = req.body.menu_label;
-        ms.com_view=req.body.com_view;
         if (req.body.access_link) { ms.access_link_id = new mongoose.Types.ObjectId(req.body.access_link); }
         else { ms.access_link_id= null; }
 
@@ -154,7 +161,6 @@ router.post(`/update/:id/`, (req, res, next) => {
     let cond = { _id: new mongoose.Types.ObjectId(req.params.id), __v: req.params.v };
     let data = {
         update_date: new Date(),
-        com_view:req.body.com_view,
         $inc: { __v: 1 }
     };
 

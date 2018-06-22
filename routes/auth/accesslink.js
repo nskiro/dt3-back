@@ -21,6 +21,7 @@ router.get('/get', (req, res, next) => {
 router.post('/add/', (req, res, next) => {
     let ac_link = {
         name: req.body.name,
+        com_view:req.body.com_view,
         des: req.body.des
     };
 
@@ -43,6 +44,7 @@ router.post(`/update/:id/`, (req, res, next) => {
     let data = {
         name: req.body.name,
         des: req.body.des,
+        com_view:req.body.com_view,
         update_date: new Date(),
         $inc: { __v: 1 }
     };
@@ -51,7 +53,6 @@ router.post(`/update/:id/`, (req, res, next) => {
             return res.status(200).send({ valid: true, data: data });
         }
         return res.status(200).send({ valid: false, message: err });
-
     })
 });
 
