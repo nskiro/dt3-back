@@ -16,7 +16,6 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/add', (req, res, next) => {
-    console.log(req.body);
     const roleObj = {
         role_name: req.body.roleName,
         create_date: new Date()

@@ -1,11 +1,12 @@
 {
   "name": "ducthanh3",
   "version": "1.0.0",
-  "license" : "(ISC OR GPL-3.0)",
+  "license": "(ISC OR GPL-3.0)",
   "scripts": {
     "server": "nodemon server.js"
   },
   "dependencies": {
+    "array-to-tree": "^2.2.1",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
@@ -19,6 +20,8 @@
     "immutability-helper": "^2.7.0",
     "jade": "^1.11.0",
     "jsonwebtoken": "^8.2.1",
+    "list-to-tree": "^2.2.1",
+    "list-to-tree-lite": "^0.1.0",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "mongoose": "^5.0.0",
