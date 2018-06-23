@@ -5,7 +5,7 @@ var router = express.Router();
 const AccessLink = require('../../Schema/Auth/AccessLink');
 
 router.get('/get', (req, res, next) => {
-    req.query.record_status = 'O';
+   // req.query.record_status = 'O';
     console.log(req.query);
     AccessLink.find(req.query)
         .sort({ 'name': 'asc' })
@@ -21,6 +21,7 @@ router.get('/get', (req, res, next) => {
 router.post('/add/', (req, res, next) => {
     let ac_link = {
         name: req.body.name,
+        com_view:req.body.com_view,
         des: req.body.des
     };
 
@@ -34,21 +35,40 @@ router.post('/add/', (req, res, next) => {
 });
 
 router.post(`/update/:id/`, (req, res, next) => {
-    let id = req.params.id;
-    console.log('id = >' + id);
-
+    console.log(req.params);
     let cond ={
         _id: req.params.id,
-        _v: req.params._v
+        __v: req.body.v
     }
-    
+    console.log('update with conditions  ==>' + JSON.stringify(cond));
     let data = {
         name: req.body.name,
         des: req.body.des,
+        com_view:req.body.com_view,
         update_date: new Date(),
         $inc: { __v: 1 }
     };
+    AccessLink.findByIdAndUpdate(cond, data, (err, data) => {
+        if (!err) {
+            return res.status(200).send({ valid: true, data: data });
+        }
+        return res.status(200).send({ valid: false, message: err });
+    })
+});
 
+
+router.post(`/enable/:id/`, (req, res, next) => {
+    console.log(req.params);
+    let cond ={
+        _id: req.params.id,
+        __v: req.body.v
+    }
+    console.log('enable with conditions  ==>' + JSON.stringify(cond));
+    let data = {
+        update_date: new Date(),
+        record_status:'O',
+        $inc: { __v: 1 }
+    };
     AccessLink.findByIdAndUpdate(cond, data, (err, data) => {
         if (!err) {
             return res.status(200).send({ valid: true, data: data });
@@ -58,4 +78,25 @@ router.post(`/update/:id/`, (req, res, next) => {
     })
 });
 
+
+router.post(`/disable/:id/`, (req, res, next) => {
+    console.log(req.params);
+    let cond ={
+        _id: req.params.id,
+        __v: req.body.v
+    }
+    console.log('enable with conditions  ==>' + JSON.stringify(cond));
+    let data = {
+        update_date: new Date(),
+        record_status:'C',
+        $inc: { __v: 1 }
+    };
+    AccessLink.findByIdAndUpdate(cond, data, (err, data) => {
+        if (!err) {
+            return res.status(200).send({ valid: true, data: data });
+        }
+        return res.status(200).send({ valid: false, message: err });
+
+    })
+});
 module.exports = router;
