@@ -5,7 +5,7 @@ const role = require('../../Schema/Auth/Role');
 
 router.get('/', (req, res, next) => {
     role.find({ record_status: 'O' })
-        .populate('menu')
+        .populate({ path: 'menu', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 
@@ -16,7 +16,6 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/add', (req, res, next) => {
-    console.log(req.body);
     const roleObj = {
         role_name: req.body.roleName,
         create_date: new Date()
@@ -32,7 +31,7 @@ router.post('/add', (req, res, next) => {
 
 router.put('/update', (req, res, next) => {
     role.findByIdAndUpdate(req.body.id, { ...req.body, update_date: new Date() }, { new: true })
-        .populate('menu')
+        .populate({ path: 'menu', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 

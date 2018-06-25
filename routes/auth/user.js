@@ -11,8 +11,8 @@ const AccessLink = require('../../Schema/Auth/AccessLink');
 
 router.get('/', (req, res, next) => {
     user.find({ record_status: 'O' })
-        .populate('group')
-        .populate('role')
+        .populate({ path: 'group', match: { record_status: 'O' } })
+        .populate({ path: 'role', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 
@@ -38,8 +38,8 @@ router.post('/add', (req, res, next) => {
 
 router.put('/update', (req, res, next) => {
     user.findByIdAndUpdate(req.body.id, { ...req.body, update_date: new Date() }, { new: true })
-        .populate('group')
-        .populate('role')
+        .populate({ path: 'group', match: { record_status: 'O' } })
+        .populate({ path: 'role', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 
@@ -51,8 +51,8 @@ router.put('/update', (req, res, next) => {
 
 router.put('/addgroup', (req, res, next) => {
     user.findByIdAndUpdate(req.body.id, { group: req.body.groupId, update_date: new Date() }, { new: true })
-        .populate('group')
-        .populate('role')
+        .populate({ path: 'group', match: { record_status: 'O' } })
+        .populate({ path: 'role', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 
@@ -64,8 +64,8 @@ router.put('/addgroup', (req, res, next) => {
 
 router.put('/addrole', (req, res, next) => {
     user.findByIdAndUpdate(req.body.id, { role: req.body.roleId, update_date: new Date() }, { new: true })
-        .populate('group')
-        .populate('role')
+        .populate({ path: 'group', match: { record_status: 'O' } })
+        .populate({ path: 'role', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 

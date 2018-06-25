@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@denq/iron-tree@^1.2.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@denq/iron-tree/-/iron-tree-1.3.0.tgz#46913a69ea948d29781ae53094e9644a0080d284"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -140,6 +144,15 @@ arr-union@^3.1.0:
 array-flatten@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/array-flatten/-/array-flatten-1.1.1.tgz#9a5f699051b1e7073328f2a008968b64ea2955d2"
+
+array-to-tree@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/array-to-tree/-/array-to-tree-2.2.1.tgz#4c66582f1a2560460f30dcdf20c8802cef089b15"
+  dependencies:
+    lodash.assign "^4.0.6"
+    lodash.isarray "^4.0.0"
+    lodash.keyby "^4.6.0"
+    nested-property "^0.0.7"
 
 array-union@^1.0.1:
   version "1.0.2"
@@ -1615,6 +1628,20 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+list-to-tree-lite@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/list-to-tree-lite/-/list-to-tree-lite-0.1.0.tgz#9634fa8d56c8d536e6b604f4644329235a71b76c"
+
+list-to-tree@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/list-to-tree/-/list-to-tree-2.2.1.tgz#c38416080b8bd97887e1b1905ee0638f60df575c"
+  dependencies:
+    "@denq/iron-tree" "^1.2.0"
+
+lodash.assign@^4.0.6:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
+
 lodash.get@4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
@@ -1622,6 +1649,10 @@ lodash.get@4.4.2:
 lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.includes/-/lodash.includes-4.3.0.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
+
+lodash.isarray@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/lodash.isarray/-/lodash.isarray-4.0.0.tgz#2aca496b28c4ca6d726715313590c02e6ea34403"
 
 lodash.isboolean@^3.0.3:
   version "3.0.3"
@@ -1642,6 +1673,10 @@ lodash.isplainobject@^4.0.6:
 lodash.isstring@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/lodash.isstring/-/lodash.isstring-4.0.1.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
+
+lodash.keyby@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.keyby/-/lodash.keyby-4.6.0.tgz#7f6a1abda93fd24e22728a4d361ed8bcba5a4354"
 
 lodash.once@^4.0.0:
   version "4.1.1"
@@ -1896,6 +1931,10 @@ needle@^2.2.0:
 negotiator@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
+
+nested-property@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/nested-property/-/nested-property-0.0.7.tgz#ff222f233ca8793c6828b4117091bea597130f4f"
 
 node-pre-gyp@^0.10.0:
   version "0.10.0"
