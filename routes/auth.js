@@ -99,7 +99,7 @@ router.post('/login', (req, res, next) => {
                             }
                         }
                     }
-                    console.log('Links =>' + JSON.stringify(links));
+                   // console.log('Links =>' + JSON.stringify(links));
                     //
                     resData._doc.menu = jsonMenu;
                     resData._doc.link = links;
