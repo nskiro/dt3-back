@@ -87,6 +87,7 @@ router.delete('/delete', (req, res, next) => {
 
 router.post('/checkcanaccess', async (req, res, next) => {
     let username = 'vuonglb';//req.body.username;
+    /*
     let rs_role_groups = await findGroupAndRoleOfUser(username);
     let rsgroups = rs_role_groups[0].group;
    // console.log(JSON.stringify(rsgroups));
@@ -101,7 +102,7 @@ router.post('/checkcanaccess', async (req, res, next) => {
   //  console.log(rolesingroup);
     rsroles.push(rolesingroup);
    // console.log(rsroles);
-
+*/
     //let rsroles = rs_role_groups.role;
     return res.status(200).send({ valid: true });
 });
