@@ -33,7 +33,7 @@ router.post('/login', (req, res, next) => {
     user.findOne({ username: req.body.username, password: req.body.password, record_status: 'O' })
         .populate({ path: 'group', match: { record_status: 'O' }, populate: { path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } } })
         .populate({ path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } })
-        .exec((err, doc) => {
+        .exec(async (err, doc) => {
             if (!err) {
                 const groups = doc.group.map((group) => {
                     return group.group_name;
@@ -68,44 +68,52 @@ router.post('/login', (req, res, next) => {
                 let userMenu = [];
                 _.forEach(doc.role, (role) => {
                     _.forEach(role.menu, (menu) => {
-                        userMenu.push(menu);
+                        if (_.findIndex(userMenu, { _id: menu._id }) < 0) {
+                            userMenu.push(menu);
+                        }
                     })
                 })
 
                 _.forEach(doc.group, (group) => {
                     _.forEach(group.role, (role) => {
                         _.forEach(role.menu, (menu) => {
-                            userMenu.push(menu);
+                            if (_.findIndex(userMenu, { _id: menu._id }) < 0) {
+                                userMenu.push(menu);
+                            }
                         })
                     })
                 });
 
-                menu.find({ record_status: 'O' }, async (err, docs) => {
-                    const jsonMenu = dequy(docs);
-                    let resData = { ...doc };
-                    resData._doc.group = groups;
-                    resData._doc.role = _.uniq(_.union(roles, subRoles));
 
-                    let cond_links = { _id: { $in: roles_id }, record_status: 'O' };
-                    //console.log('cond_links ==>' + JSON.stringify(cond_links));
-                    // get menu & link cua user
-                    let menus = await findMenuAccessLink(cond_links);
-
-                    let links = [];
-                    for (let i = 0; i < menus.length; i++) {
-                        for (let j = 0; j < menus[i].menu.length; j++) {
-                            if (_.findIndex(links, menus[i].menu[j].access_link_id._id) < 0) {
-                                links.push(menus[i].menu[j].access_link_id);
-                            }
+                let cond_links = { _id: { $in: roles_id }, record_status: 'O' };
+                let menus = await findMenuAccessLink(cond_links);
+                // console.log('findMenuAccessLink =>' + JSON.stringify(menus));
+                let links = [];
+                for (let i = 0; i < menus.length; i++) {
+                    for (let j = 0; j < menus[i].menu.length; j++) {
+                        if (_.findIndex(links, menus[i].menu[j].access_link_id._id) < 0) {
+                            links.push(menus[i].menu[j].access_link_id);
                         }
                     }
+                }
+
+                const jsonMenu = dequy(userMenu);
+                ///console.log('userMenu =>' +JSON.stringify(jsonMenu));
+                let resData = { ...doc };
+                resData._doc.group = groups;
+                resData._doc.role = _.uniq(_.union(roles, subRoles));
+                resData._doc.menu = jsonMenu;
+                resData._doc.link = links;
+
+                return res.status(200).send(resData._doc);
+
+                /*
+                menu.find({ record_status: 'O' }, async (err, docs) => {
                    // console.log('Links =>' + JSON.stringify(links));
                     //
-                    resData._doc.menu = jsonMenu;
-                    resData._doc.link = links;
 
-                    return res.status(200).send(resData._doc);
                 });
+                */
             }
             //return res.status(500).send(err);
         });
