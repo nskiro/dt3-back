@@ -100,10 +100,17 @@ router.post('/login', (req, res, next) => {
                 const jsonMenu = dequy(userMenu);
                 ///console.log('userMenu =>' +JSON.stringify(jsonMenu));
                 let resData = { ...doc };
+                delete resData._doc.password;
                 resData._doc.group = groups;
                 resData._doc.role = _.uniq(_.union(roles, subRoles));
                 resData._doc.menu = jsonMenu;
                 resData._doc.link = links;
+
+                const tokenStr = jwt.makeToken(resData._doc);
+                //console.log('tokenStr=>' + tokenStr);
+                if (tokenStr) {
+                    resData._doc.token = tokenStr;
+                }
 
                 return res.status(200).send(resData._doc);
 
