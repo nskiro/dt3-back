@@ -13,16 +13,21 @@ dequy = (data, parentId = null) => {
     _.forEach(data, (item) => {
         if (String(item.menu_parent_id) === String(parentId)) {
             const arrItem = { ...item };
-            tempArr.push(arrItem._doc);
+            tempArr.push(arrItem);
         }
     });
 
     if (tempArr.length > 0) {
         return tempArr.map((item) => {
-            return { ...item, children: dequy(data, item._id) };
+            if (item) {
+                return { ...item, children: dequy(data, item._id) };
+            }
+            else { return { ...item, children: [] }; }
         });
     }
 }
+
+
 
 findMenuAccessLink = (cond) => {
     return Role.find(cond)
@@ -66,6 +71,7 @@ router.post('/login', (req, res, next) => {
 
                 // User Menu
                 let userMenu = [];
+                /*
                 _.forEach(doc.role, (role) => {
                     _.forEach(role.menu, (menu) => {
                         if (_.findIndex(userMenu, { _id: menu._id }) < 0) {
@@ -83,22 +89,29 @@ router.post('/login', (req, res, next) => {
                         })
                     })
                 });
-
-
+            */
                 let cond_links = { _id: { $in: roles_id }, record_status: 'O' };
                 let menus = await findMenuAccessLink(cond_links);
-                // console.log('findMenuAccessLink =>' + JSON.stringify(menus));
+                //console.log('findMenuAccessLink =>' + JSON.stringify(menus));
                 let links = [];
                 for (let i = 0; i < menus.length; i++) {
                     for (let j = 0; j < menus[i].menu.length; j++) {
                         if (_.findIndex(links, menus[i].menu[j].access_link_id._id) < 0) {
                             links.push(menus[i].menu[j].access_link_id);
                         }
+                        //console.log('menus[i].menu[j]._id =>' + menus[i].menu[j]._id);
+                        if (_.findIndex(userMenu, { _id: menus[i].menu[j]._id }) < 0) {
+
+                            userMenu.push(copyMenuData(menus[i].menu[j]));
+                        }
                     }
+
                 }
 
+                //console.log('userMenu =>' + JSON.stringify(userMenu));
+
                 const jsonMenu = dequy(userMenu);
-                ///console.log('userMenu =>' +JSON.stringify(jsonMenu));
+                console.log('userMenu =>' + JSON.stringify(jsonMenu));
                 let resData = { ...doc };
                 delete resData._doc.password;
                 resData._doc.group = groups;

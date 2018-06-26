@@ -19,12 +19,12 @@ findMenuChildsByParent = (parent_id) => {
     return Menus.find({ menu_parent_id: new mongoose.mongo.ObjectID(parent_id) });
 }
 
-findMenuRoot  =() =>{
-    return Menus.find({record_status:'O', menu_parent_id:null});
+findMenuRoot = () => {
+    return Menus.find({ record_status: 'O', menu_parent_id: null });
 }
 
-findMenus = () =>{
-    return Menus.find({record_status:'O'});
+findMenus = () => {
+    return Menus.find({ record_status: 'O' });
 }
 copyMenuData = (mi) => {
     let item = {
@@ -34,11 +34,16 @@ copyMenuData = (mi) => {
         create_date: mi.create_date,
         update_date: mi.update_date,
         record_status: mi.record_status,
-        key:mi._id,
+        key: mi._id,
         title: mi.menu_label,
-        _id: mi._id,
+
         __v: mi.__v
     };
+    item._id = mi._id;
+    if (mi.access_link_id) {
+        item.url = mi.access_link_id.name
+    }
+
     return item;
 }
 
@@ -138,7 +143,7 @@ router.post('/add/', (req, res, next) => {
     try {
         ms.menu_label = req.body.menu_label;
         if (req.body.access_link) { ms.access_link_id = new mongoose.Types.ObjectId(req.body.access_link); }
-        else { ms.access_link_id= null; }
+        else { ms.access_link_id = null; }
 
         if (req.body.menu_parent) { ms.menu_parent_id = new mongoose.Types.ObjectId(req.body.menu_parent); }
         else { ms.menu_parent_id = null; }
@@ -166,11 +171,11 @@ router.post(`/update/:id/`, (req, res, next) => {
 
     try {
         data.menu_label = req.body.menu_label;
-        if(req.body.access_link){ data.access_link_id = new mongoose.Types.ObjectId(req.body.access_link);}
-        else {data.access_link_id=null;}
+        if (req.body.access_link) { data.access_link_id = new mongoose.Types.ObjectId(req.body.access_link); }
+        else { data.access_link_id = null; }
 
         if (req.body.menu_parent) { data.menu_parent_id = new mongoose.Types.ObjectId(req.body.menu_parent); }
-        else {data.menu_parent_id=null;}
+        else { data.menu_parent_id = null; }
     } catch (ex) {
         console.log(ex);
         return res.status(200).send({ valid: false, message: ex });
