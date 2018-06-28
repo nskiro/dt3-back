@@ -1,104 +1,53 @@
 var express = require('express');
-var mongoose = require('mongoose');
 var router = express.Router();
 var jwt = require('../helper');
 var _ = require('lodash');
 const user = require('../Schema/Auth/User');
-const menu = require('../Schema/Auth/Menu');
-const Role = require('../Schema/Auth/Role');
-
-dequy = (data, parentId = null) => {
-    let tempArr = [];
-    _.forEach(data, (item) => {
-        if (String(item.menu_parent_id) === String(parentId)) {
-            const arrItem = { ...item };
-            tempArr.push(arrItem);
-        }
-    });
-
-    if (tempArr.length > 0) {
-        return tempArr.map((item) => {
-            if (item) {
-                return { ...item, children: dequy(data, item._id) };
-            }
-            else { return { ...item, children: [] }; }
-        });
-    }
-}
-
-
-
-findMenuAccessLink = (cond) => {
-    return Role.find(cond)
-        .populate({ path: 'menu', match: { record_status: 'O' }, populate: { path: 'access_link_id', match: { record_status: 'O' } } });
-}
 
 router.post('/login', (req, res, next) => {
-    user.findOne({ username: req.body.username, password: req.body.password, record_status: 'O' })
-        .populate({ path: 'group', match: { record_status: 'O' }, populate: { path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } } })
-        .populate({ path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } })
-        .exec(async (err, doc) => {
-            if (!err) {
-                const groups = doc.group.map((group) => {
-                    return group.group_name;
-                });
+    user.findOne({
+        username: req.body.username,
+        password: req.body.password,
+        record_status: 'O'
+    }, (err, doc) => {
+        if (!err && doc) {
+            delete doc._doc.password
+            const token = jwt.makeToken(doc._doc)
+            return res.status(200).send(token)
+        }
+        return res.status(500).send(err)
+    })
+})
 
-                const roles = doc.role.map((role) => {
-                    return role.role_name;
-                });
-
-                const roles_id = doc.role.map((role) => {
-                    return role._id;
-                });
-
-                let subRoles = [];
-                _.forEach(doc.group, (group) => {
-                    _.forEach(group.role, (role) => {
-                        subRoles.push(role.role_name);
-                    })
-                });
-
-                //let subRoles = [];
-                _.forEach(doc.group, (group) => {
-                    _.forEach(group.role, (role) => {
-                        if (_.findIndex(roles_id, [role._id]) < 0) {
-                            roles_id.push(role._id);
-                        }
-                    })
-                });
-
-                // User Menu
-                let userMenu = [];
-                let cond_links = { _id: { $in: roles_id }, record_status: 'O' };
-                let menus = await findMenuAccessLink(cond_links);
-                let links = [];
-                for (let i = 0; i < menus.length; i++) {
-                    for (let j = 0; j < menus[i].menu.length; j++) {
-                        if (_.findIndex(links, menus[i].menu[j].access_link_id._id) < 0) {
-                            links.push(menus[i].menu[j].access_link_id);
-                        }
-                        if (_.findIndex(userMenu, { _id: menus[i].menu[j]._id }) < 0) {
-
-                            userMenu.push(copyMenuData(menus[i].menu[j]));
-                        }
-                    }
-
-                }
-                const jsonMenu = dequy(userMenu);
-                let resData = { ...doc };
-                delete resData._doc.password;
-                resData._doc.group = groups;
-                resData._doc.role = _.uniq(_.union(roles, subRoles));
-                resData._doc.menu = jsonMenu;
-                resData._doc.link = links;
-
-                const tokenStr = jwt.makeToken(resData._doc);
-                if (tokenStr) {
-                    resData._doc.token = tokenStr;
-                }
-
-                return res.status(200).send(resData._doc);
+router.get('/getUserInfo', (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodeData = jwt.verifyToken(token);
+    // decode token
+    if (!decodeData) {
+        return res.status(401).send('Failed to authenticate token.');
+    }
+    user.findById(decodeData._id)
+        .populate({
+            path: 'role',
+            match: {
+                record_status: 'O'
             }
+        })
+        .exec((err, doc) => {
+            if (!err) {
+                const userRoles = []
+
+                doc.role.forEach((role) => {
+                    userRoles.push(role.role_name)
+                })
+                const resData = { ...doc._doc,
+                    role: _.uniq(userRoles)
+                }
+                delete resData.password
+                delete resData.record_status
+                return res.status(200).send(resData)
+            }
+            return res.status(500).send(err)
         });
 });
 
