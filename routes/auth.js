@@ -6,7 +6,6 @@ var _ = require('lodash');
 const user = require('../Schema/Auth/User');
 const menu = require('../Schema/Auth/Menu');
 const Role = require('../Schema/Auth/Role');
-const AccessLink = require('../Schema/Auth/AccessLink');
 
 dequy = (data, parentId = null) => {
     let tempArr = [];
@@ -65,41 +64,19 @@ router.post('/login', (req, res, next) => {
                         if (_.findIndex(roles_id, [role._id]) < 0) {
                             roles_id.push(role._id);
                         }
-                        //subRoles.push(role.role_name);
                     })
                 });
 
                 // User Menu
                 let userMenu = [];
-                /*
-                _.forEach(doc.role, (role) => {
-                    _.forEach(role.menu, (menu) => {
-                        if (_.findIndex(userMenu, { _id: menu._id }) < 0) {
-                            userMenu.push(menu);
-                        }
-                    })
-                })
-
-                _.forEach(doc.group, (group) => {
-                    _.forEach(group.role, (role) => {
-                        _.forEach(role.menu, (menu) => {
-                            if (_.findIndex(userMenu, { _id: menu._id }) < 0) {
-                                userMenu.push(menu);
-                            }
-                        })
-                    })
-                });
-            */
                 let cond_links = { _id: { $in: roles_id }, record_status: 'O' };
                 let menus = await findMenuAccessLink(cond_links);
-                //console.log('findMenuAccessLink =>' + JSON.stringify(menus));
                 let links = [];
                 for (let i = 0; i < menus.length; i++) {
                     for (let j = 0; j < menus[i].menu.length; j++) {
                         if (_.findIndex(links, menus[i].menu[j].access_link_id._id) < 0) {
                             links.push(menus[i].menu[j].access_link_id);
                         }
-                        //console.log('menus[i].menu[j]._id =>' + menus[i].menu[j]._id);
                         if (_.findIndex(userMenu, { _id: menus[i].menu[j]._id }) < 0) {
 
                             userMenu.push(copyMenuData(menus[i].menu[j]));
@@ -107,11 +84,7 @@ router.post('/login', (req, res, next) => {
                     }
 
                 }
-
-                //console.log('userMenu =>' + JSON.stringify(userMenu));
-
                 const jsonMenu = dequy(userMenu);
-                console.log('userMenu =>' + JSON.stringify(jsonMenu));
                 let resData = { ...doc };
                 delete resData._doc.password;
                 resData._doc.group = groups;
@@ -120,22 +93,12 @@ router.post('/login', (req, res, next) => {
                 resData._doc.link = links;
 
                 const tokenStr = jwt.makeToken(resData._doc);
-                //console.log('tokenStr=>' + tokenStr);
                 if (tokenStr) {
                     resData._doc.token = tokenStr;
                 }
 
                 return res.status(200).send(resData._doc);
-
-                /*
-                menu.find({ record_status: 'O' }, async (err, docs) => {
-                   // console.log('Links =>' + JSON.stringify(links));
-                    //
-
-                });
-                */
             }
-            //return res.status(500).send(err);
         });
 });
 
