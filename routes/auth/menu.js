@@ -36,10 +36,9 @@ copyMenuData = (mi) => {
         record_status: mi.record_status,
         key: mi._id,
         title: mi.menu_label,
-
+        _id: mi._id,
         __v: mi.__v
     };
-    item._id = mi._id;
     if (mi.access_link_id) {
         item.url = mi.access_link_id.name
     }

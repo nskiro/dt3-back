@@ -4,20 +4,16 @@ var router = express.Router();
 
 const FabricType = require('../../Schema/Fabric/FabricType');
 
-
-
 router.get('/get', (req, res, next) => {
     req.query.record_status = 'O';
-
     FabricType.find(req.query)
-        .sort({ 'fabraictype_name': 'asc' })
+        .sort({ 'fabrictype_name': 'asc' })
         .exec((err, fabrictypes) => {
             if (!err)
                 return res.status(200).send(fabrictypes);
             return res.status(500).send(fabrictypes);
         })
 })
-
 
 router.post('/add/', (req, res, next) => {
     var ftype;

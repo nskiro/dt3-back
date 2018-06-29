@@ -8,7 +8,6 @@ router.get('/', (req, res, next) => {
         .populate({ path: 'role', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
-
                 return res.status(200).send(doc);
             }
             return res.status(500).send(err);

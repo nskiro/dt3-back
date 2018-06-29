@@ -96,12 +96,12 @@ router.post('/login', (req, res, next) => {
                 let links = [];
                 for (let i = 0; i < menus.length; i++) {
                     for (let j = 0; j < menus[i].menu.length; j++) {
-                        if (_.findIndex(links, menus[i].menu[j].access_link_id._id) < 0) {
+                        //console.log(menus[i].menu[j].access_link_id._id)
+                        if (_.findIndex(links, {_id:menus[i].menu[j].access_link_id._id}) < 0) {
                             links.push(menus[i].menu[j].access_link_id);
                         }
                         //console.log('menus[i].menu[j]._id =>' + menus[i].menu[j]._id);
                         if (_.findIndex(userMenu, { _id: menus[i].menu[j]._id }) < 0) {
-
                             userMenu.push(copyMenuData(menus[i].menu[j]));
                         }
                     }
@@ -110,8 +110,33 @@ router.post('/login', (req, res, next) => {
 
                 //console.log('userMenu =>' + JSON.stringify(userMenu));
 
+                /*
+                //get parent
+                let menu_return=[]
+                for(let i=0;i<userMenu.length;i++ ){
+                    if(userMenu[i].menu_parent_id===null && _.findIndex(menu_return,{_id:userMenu[i]._id})<0){
+                        menu_return.push(copyMenuData(userMenu[i]));
+                    }
+                }
+                console.log('parent=> ' +JSON.stringify(menu_return));
+
+                // tim menu cap 1
+                for(let i=0;i<menu_return.length;i++){
+                    let child =[]
+                    for(let j=0;j<userMenu.length;j++){
+                        if(menu_return[i]._id === userMenu[j].menu_parent_id){
+                            if(_.findIndex(child,{_id:userMenu[j]._id})<0){
+                                child.push(copyMenuData(userMenu[j]));
+                            }
+                        }
+                    }
+                    menu_return[i].children=child;
+                }
+                console.log('parent + child 1=> ' +JSON.stringify(menu_return));
+                */
+               console.log('links=> ' +JSON.stringify(links));
                 const jsonMenu = dequy(userMenu);
-                console.log('userMenu =>' + JSON.stringify(jsonMenu));
+                //console.log('userMenu =>' + JSON.stringify(jsonMenu));
                 let resData = { ...doc };
                 delete resData._doc.password;
                 resData._doc.group = groups;
