@@ -12,6 +12,7 @@ router.get('/get', (req, res, next) => {
             if (err) {
                 return res.status(500).send(err)
             }
+            console.log('fabricproviders =>'+ JSON.stringify(fabricproviders));
             return res.status(200).send(fabricproviders);
         })
 });

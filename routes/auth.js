@@ -97,9 +97,12 @@ router.post('/login', (req, res, next) => {
                 for (let i = 0; i < menus.length; i++) {
                     for (let j = 0; j < menus[i].menu.length; j++) {
                         //console.log(menus[i].menu[j].access_link_id._id)
-                        if (_.findIndex(links, {_id:menus[i].menu[j].access_link_id._id}) < 0) {
-                            links.push(menus[i].menu[j].access_link_id);
+                        if (menus[i].menu[j].access_link_id) {
+                            if (_.findIndex(links, { _id: menus[i].menu[j].access_link_id._id }) < 0) {
+                                links.push(menus[i].menu[j].access_link_id);
+                            }
                         }
+
                         //console.log('menus[i].menu[j]._id =>' + menus[i].menu[j]._id);
                         if (_.findIndex(userMenu, { _id: menus[i].menu[j]._id }) < 0) {
                             userMenu.push(copyMenuData(menus[i].menu[j]));
@@ -134,7 +137,7 @@ router.post('/login', (req, res, next) => {
                 }
                 console.log('parent + child 1=> ' +JSON.stringify(menu_return));
                 */
-               console.log('links=> ' +JSON.stringify(links));
+                //console.log('links=> ' + JSON.stringify(links));
                 const jsonMenu = dequy(userMenu);
                 //console.log('userMenu =>' + JSON.stringify(jsonMenu));
                 let resData = { ...doc };
