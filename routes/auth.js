@@ -38,6 +38,7 @@ router.post('/login', (req, res, next) => {
     user.findOne({ username: req.body.username, password: req.body.password, record_status: 'O' })
         .populate({ path: 'group', match: { record_status: 'O' }, populate: { path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } } })
         .populate({ path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } })
+        .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec(async (err, doc) => {
             if (!err) {
                 const groups = doc.group.map((group) => {
@@ -97,15 +98,16 @@ router.post('/login', (req, res, next) => {
                 for (let i = 0; i < menus.length; i++) {
                     for (let j = 0; j < menus[i].menu.length; j++) {
                         //console.log(menus[i].menu[j].access_link_id._id)
-                        if (_.findIndex(links, {_id:menus[i].menu[j].access_link_id._id}) < 0) {
-                            links.push(menus[i].menu[j].access_link_id);
+                        if (menus[i].menu[j].access_link_id) {
+                            if (_.findIndex(links, { _id: menus[i].menu[j].access_link_id._id }) < 0) {
+                                links.push(menus[i].menu[j].access_link_id);
+                            }
                         }
                         //console.log('menus[i].menu[j]._id =>' + menus[i].menu[j]._id);
                         if (_.findIndex(userMenu, { _id: menus[i].menu[j]._id }) < 0) {
                             userMenu.push(copyMenuData(menus[i].menu[j]));
                         }
                     }
-
                 }
 
                 //console.log('userMenu =>' + JSON.stringify(userMenu));
@@ -134,9 +136,9 @@ router.post('/login', (req, res, next) => {
                 }
                 console.log('parent + child 1=> ' +JSON.stringify(menu_return));
                 */
-               console.log('links=> ' +JSON.stringify(links));
+                //console.log('links=> ' +JSON.stringify(links));
                 const jsonMenu = dequy(userMenu);
-                //console.log('userMenu =>' + JSON.stringify(jsonMenu));
+                console.log('userMenu =>' + JSON.stringify(jsonMenu));
                 let resData = { ...doc };
                 delete resData._doc.password;
                 resData._doc.group = groups;
