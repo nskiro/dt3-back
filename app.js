@@ -26,6 +26,7 @@ const menusRouter = require('./routes/auth/menu');
 const groupRoute = require('./routes/auth/group');
 const roleRoute = require('./routes/auth/role');
 const userRoute = require('./routes/auth/user');
+const deptRoute = require('./routes/auth/dept');
 const app = express();
 
 // CORS setup
@@ -48,6 +49,8 @@ app.use('/user', authRouter);
 app.use('/api/admin/group', groupRoute);
 app.use('/api/admin/role', roleRoute);
 app.use('/api/admin/user', userRoute);
+app.use('/api/admin/dept', deptRoute);
+
 // route middleware to verify a token
 // app.use((req, res, next) => {
 //   console.log(req.path);

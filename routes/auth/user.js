@@ -4,15 +4,12 @@ var mongoose = require('mongoose');
 var router = express.Router();
 
 const user = require('../../Schema/Auth/User');
-const Group = require('../../Schema/Auth/Group');
-const Role = require('../../Schema/Auth/Role');
-const Menu = require('../../Schema/Auth/Menu');
-const AccessLink = require('../../Schema/Auth/AccessLink');
 
 router.get('/', (req, res, next) => {
     user.find({ record_status: 'O' })
         .populate({ path: 'group', match: { record_status: 'O' } })
         .populate({ path: 'role', match: { record_status: 'O' } })
+        .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 
@@ -40,9 +37,9 @@ router.put('/update', (req, res, next) => {
     user.findByIdAndUpdate(req.body.id, { ...req.body, update_date: new Date() }, { new: true })
         .populate({ path: 'group', match: { record_status: 'O' } })
         .populate({ path: 'role', match: { record_status: 'O' } })
+        .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
-
                 return res.status(200).send(doc);
             }
             return res.status(500).send(err);
@@ -53,6 +50,7 @@ router.put('/addgroup', (req, res, next) => {
     user.findByIdAndUpdate(req.body.id, { group: req.body.groupId, update_date: new Date() }, { new: true })
         .populate({ path: 'group', match: { record_status: 'O' } })
         .populate({ path: 'role', match: { record_status: 'O' } })
+        .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 
@@ -66,6 +64,7 @@ router.put('/addrole', (req, res, next) => {
     user.findByIdAndUpdate(req.body.id, { role: req.body.roleId, update_date: new Date() }, { new: true })
         .populate({ path: 'group', match: { record_status: 'O' } })
         .populate({ path: 'role', match: { record_status: 'O' } })
+        .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
 
