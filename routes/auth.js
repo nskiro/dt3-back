@@ -40,6 +40,9 @@ router.post('/login', (req, res, next) => {
         .populate({ path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } })
         .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec(async (err, doc) => {
+            if(!doc){
+                return res.status(401).send('Invalid username or password');
+            }
             if (!err) {
                 const groups = doc.group.map((group) => {
                     return group.group_name;
@@ -71,7 +74,7 @@ router.post('/login', (req, res, next) => {
 
                 // User Menu
                 let userMenu = [];
-                
+
                 let cond_links = { _id: { $in: roles_id }, record_status: 'O' };
                 let menus = await findMenuAccessLink(cond_links);
                 let links = [];
@@ -89,7 +92,7 @@ router.post('/login', (req, res, next) => {
                     }
                 }
 
-                
+
                 const jsonMenu = dequy(userMenu);
                 console.log('userMenu =>' + JSON.stringify(jsonMenu));
                 let resData = { ...doc };
@@ -118,5 +121,14 @@ router.post('/login', (req, res, next) => {
             //return res.status(500).send(err);
         });
 });
+
+router.put('/changepassword', (req, res, next) => {
+    user.findByIdAndUpdate(req.body.pId, { password: req.body.password, update_date: new Date() }, { new: true },(err,doc)=>{
+        if(!err){
+            return res.status(200).send(doc);
+        }
+        return res.status(500).send(err);
+    })
+})
 
 module.exports = router;

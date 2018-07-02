@@ -52,6 +52,16 @@ router.post('/updateAvatar', (req, res, next) => {
         });
 });
 
+router.put('/updateNote', (req, res, next) => {
+    dept.findByIdAndUpdate(req.body.dId, { note: req.body.note, update_date: new Date() }, { new: true })
+        .exec((err, doc) => {
+            if (!err) {
+                return res.status(200).send(doc);
+            }
+            return res.status(500).send(err);
+        });
+})
+
 router.delete('/delete', (req, res, next) => {
     dept.updateMany({ _id: { $in: req.body.departmentIds } }, { record_status: 'C' }, (err, raw) => {
         if (!err) {
