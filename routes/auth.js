@@ -94,7 +94,6 @@ router.post('/login', (req, res, next) => {
 
 
                 const jsonMenu = dequy(userMenu);
-                console.log('userMenu =>' + JSON.stringify(jsonMenu));
                 let resData = { ...doc };
                 delete resData._doc.password;
                 resData._doc.group = groups;
