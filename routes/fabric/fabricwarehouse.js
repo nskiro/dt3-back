@@ -27,7 +27,7 @@ findImportsDetail = (req) => {
 
 findDetailTrans = (req) => {
     console.log('findImportsDetail =>' + JSON.stringify(req));
-    return FabricWarehouseTran.find(req).sort({create_date:'asc'});
+    return FabricWarehouseTran.find(req).sort({ create_date: 'asc' });
 }
 
 router.get('/getimports', async (req, res, next) => {
@@ -46,12 +46,12 @@ router.get('/getimports', async (req, res, next) => {
         //console.log('Tới day 4');
 
         if (req.query.fabric_color) {
-            if (req.query.fabric_color.length != 0) { qr_import_detail['fabric_color'] = req.query.fabric_color; }
+            if (req.query.fabric_color.length != 0) { qr_import_detail['fabric_color'] = {$regex:req.query.fabric_color}; }
             delete req.query.fabric_color;
         }
 
         if (req.query.fabric_type) {
-            if (req.query.fabric_type.length != 0) { qr_import_detail['fabric_type'] = req.query.fabric_type; }
+            if (req.query.fabric_type.length != 0) { qr_import_detail['fabric_type'] = {$regex:req.query.fabric_type}; }
             delete req.query.fabric_type;
         }
 
@@ -164,13 +164,13 @@ router.get('/getexports', async (req, res, next) => {
 
     //console.log('Tới day 1');
     if (req.query.fabric_color) {
-        if (req.query.fabric_color.length != 0) { qr_import_detail['fabric_color'] = req.query.fabric_color; }
+        if (req.query.fabric_color.length != 0) { qr_import_detail['fabric_color'] = { $regex: req.query.fabric_color }; }
         delete req.query.fabric_color;
     }
     //console.log('Tới day 2');
 
     if (req.query.fabric_type) {
-        if (req.query.fabric_type.length != 0) { qr_import_detail['fabric_type'] = req.query.fabric_type; }
+        if (req.query.fabric_type.length != 0) { qr_import_detail['fabric_type'] = { $regex: req.query.fabric_type }; }
         delete req.query.fabric_type;
     }
     //console.log('Tới day 3');
@@ -247,8 +247,7 @@ router.get('/getexports', async (req, res, next) => {
         }
 
     }
-
-    console.log('data_return ==>' + JSON.stringify(data_return));
+    //console.log('data_return ==>' + JSON.stringify(data_return));
     return res.status(200).send(data_return);
 
 });
@@ -310,29 +309,18 @@ router.get('/getinventorytrans', async (req, res, next) => {
 
     if (!_.isEmpty(conditions_date)) { req.query['create_date'] = conditions_date; };
 
-
-
-    
     const q_import_details = await findDetailTrans(req.query);
     let import_ids = [];
     let export_ids = [];
     for (let i = 0; i < q_import_details.length; i++) {
-        if(q_import_details[i].tran_type==='Nhập'){ import_ids.push(q_import_details[i].tran_type_id)}
-        else if(q_import_details[i].tran_type==='Xuất'){ export_ids.push(q_import_details[i].tran_type_id)};
+        if (q_import_details[i].tran_type === 'Nhập') { import_ids.push(q_import_details[i].tran_type_id) }
+        else if (q_import_details[i].tran_type === 'Xuất') { export_ids.push(q_import_details[i].tran_type_id) };
     }
     //get imports
     let q_imports = [];
     if (import_ids.length > 0) {
         q_imports = await findImports({ _id: { $in: import_ids }, record_status: 'O' });
     }
-
-
-
-
-
-
-
-
 
     let q_exports = [];
     if (export_ids.length > 0) {
@@ -342,12 +330,12 @@ router.get('/getinventorytrans', async (req, res, next) => {
     if (q_exports.length === 0 && q_imports.length === 0) { return res.status(200).send([]); }
 
     //combine
-   // console.log(JSON.stringify(q_import_details));
+    // console.log(JSON.stringify(q_import_details));
     let data_returned = [];
     for (let i = 0; i < q_import_details.length; i++) {
         let row = q_import_details[i];
 
-        if(row.tran_type==='Nhập'){
+        if (row.tran_type === 'Nhập') {
             let im_data = {};
             for (let j = 0; j < q_imports.length; j++) {
                 if (row.tran_type_id === q_imports[j]._id.toString()) {
@@ -363,12 +351,7 @@ router.get('/getinventorytrans', async (req, res, next) => {
             new_row.declare_date = im_data.declare_date;
             data_returned.push(new_row);
 
-
-
-
-
-
-        }else if (row.tran_type==='Xuất'){
+        } else if (row.tran_type === 'Xuất') {
             let im_data = {};
             for (let j = 0; j < q_exports.length; j++) {
                 if (row.tran_type_id === q_exports[j]._id.toString()) {
@@ -379,7 +362,7 @@ router.get('/getinventorytrans', async (req, res, next) => {
             }
             let new_row = convertTranExToNewRow(row);
             data_returned.push(new_row);
-        }       
+        }
     }
     //fill stt
     for (let i = 0; i < data_returned.length; i++) {
