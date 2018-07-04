@@ -10,6 +10,7 @@ const db = require('./db');
 // main route
 const uploadRouter = require('./routes/upload');
 const authRouter = require('./routes/auth');
+const pdfCategoryRouter = require('./routes/report/reportcategory')
 
 const fabricproviderRouter =  require('./routes/fabric/fabricprovider');
 const fabriccolorRouter =require('./routes/fabric/fabriccolor');
@@ -71,6 +72,7 @@ app.use('/api/admin/dept', deptRoute);
 // });
 
 app.use('/api/upload',uploadRouter);
+app.use('/api/pdf/category',pdfCategoryRouter);
 
 app.use('/api/fabric/provider',fabricproviderRouter);
 app.use('/api/fabric/type',fabrictypeRouter);

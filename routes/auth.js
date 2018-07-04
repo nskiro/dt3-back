@@ -22,7 +22,9 @@ dequy = (data, parentId = null) => {
             if (item) {
                 return { ...item, children: dequy(data, item._id) };
             }
-            else { return { ...item, children: [] }; }
+            else { 
+                return { ...item, children: [] }; 
+            }
         });
     }
 }
