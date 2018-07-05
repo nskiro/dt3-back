@@ -8,7 +8,7 @@ const fabricimport_detail = new mongoose.Schema({
     fabric_type: String,
     note: { type: String, default: null },
 
-    create_date: { type: Date, default: new Date() },
+    create_date: { type: Date, default:null  },
     update_date: { type: Date, default: null },
     record_status: { type: String, default: 'O' }
 
@@ -21,7 +21,7 @@ const fabricimport = new mongoose.Schema({
     invoice_no: String,
     declare_date: Date,
 
-    create_date: { type: Date, default: new Date() },
+    create_date: { type: Date, default: null },
     update_date: { type: Date, default: null },
     record_status: { type: String, default: 'O' },
 

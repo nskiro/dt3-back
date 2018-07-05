@@ -90,6 +90,7 @@ updateWarehouse = (ftype, fcolor, imet, iroll) => {
 createnewExport = (data_com, data_detail) => {
     let fab = {
         inputdate_no: new Date(data_com.inputdate_no),
+        create_date:new Date(),
         details: data_detail
     };
     return FabricExport.create(fab);
@@ -98,6 +99,7 @@ createnewExport = (data_com, data_detail) => {
 createnewExportDetail = (exportid, data_detail) => {
     for (let i = 0; i < data_detail.length; i++) {
         data_detail[i]._id = new mongoose.mongo.ObjectId();
+        data_detail[i].create_date=new Date()
         data_detail[i].exportid = exportid;
     }
     //console.log(data_detail);

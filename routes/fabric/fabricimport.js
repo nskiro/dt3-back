@@ -72,6 +72,7 @@ updateWarehouse = (ftype, fcolor, imet, iroll) => {
 }
 
 createnewTransaction = (tran) => {
+    tran.create_date=new Date();
     return FabricWarehouseTran.create(tran);
 }
 
@@ -93,6 +94,7 @@ createnewImport = (data_com, data_detail) => {
 createnewImportDetail = (newimportid, data_detail) => {
     for (let i = 0; i < data_detail.length; i++) {
         data_detail[i]._id = new mongoose.mongo.ObjectId();
+        data_detail[i].create_date=new Date()
         data_detail[i].importid = newimportid;
     }
     return FabricImportDetail.create(data_detail);
