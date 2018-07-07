@@ -43,6 +43,24 @@ router.get('/get', (req, res, next) => {
         })
 });
 
+
+router.get('/getdetails', (req, res, next) => {
+    if(req.query.importid){
+        req.query.importid=new mongoose.mongo.ObjectId(req.query.importid) 
+    }
+
+    console.log('getdetails receiver = '+ JSON.stringify(req.query))
+    FabricImportDetail.find(req.query)
+    .sort({ 'create_date': 'desc' })
+    .exec((err, details) => {
+        if (!err) {
+            return res.status(200).send({valid:true,data:details});
+        }
+        return res.status(200).send({valid:false,message: err});
+    })
+
+})
+
 checkPairTypeAndColor = (data_detail, fabricwarehouse) => {
     let pair_notfound = [];
     let pair_found = [];
