@@ -10,7 +10,6 @@ const FabricWarehouseTran = require('../../Schema/Fabric/FabricWarehouseTran');
 const _ = require('lodash');
 
 router.get('/get', (req, res, next) => {
-    //console.log(req.query);
     if (req.query.provider_name && req.query.provider_name === 'A') {
         delete req.query.provider_name;
     }
@@ -22,16 +21,41 @@ router.get('/get', (req, res, next) => {
         delete req.query.declare_dates;
     }
     if (req.query.orderid) {
-        let details = { orderid: req.query.orderid };
         req.query['details.orderid'] = req.query.orderid;
         delete req.query.orderid;
     }
+
+    if (req.query.fabric_color) {
+        let fabric_color = { fabric_color: req.query.fabric_color }
+        req.query['details.fabric_color'] = req.query.fabric_color;
+        delete req.query.fabric_color;
+    }
+
+    if (req.query.fabric_type) {
+        req.query['details.fabric_type'] = req.query.fabric_type;
+        delete req.query.fabric_type;
+    }
+
+    if (req.query.from_date || req.query.to_date) {
+        let create_date = {}
+        if (req.query.from_date) { create_date.$gte = new Date(req.query.from_date); delete req.query.from_date }
+        if (req.query.to_date) { create_date.$lte = new Date(req.query.to_date); delete req.query.to_date }
+        req.query.create_date = create_date;
+    }
+
     if (req.query.declare_no != undefined && req.query.declare_no.length === 0) { delete req.query.declare_no; }
     if (req.query.invoice_no != undefined && req.query.invoice_no.length === 0) { delete req.query.invoice_no; }
     if (req.query.orderid != undefined && req.query.orderid.length === 0) { delete req.query.orderid; }
+    if (req.query.fabric_color != undefined && req.query.fabric_color.length === 0) { delete req.query.fabric_color }
+    if (req.query.fabric_type != undefined && req.query.fabric_type.length === 0) { delete req.query.fabric_type }
+    if (req.query.from_date != undefined && req.query.from_date.length === 0) { delete req.query.from_date }
+    if (req.query.to_date != undefined && req.query.to_date.length === 0) { delete req.query.to_date }
 
-    req.query.record_status = 'O';
-    //console.log('query ===> ' + JSON.stringify(req.query));
+    if (req.query.record_status != undefined && req.query.record_status.length === 0) {
+        req.query.record_status = 'O';
+    }
+
+    console.log('query ===> ' + JSON.stringify(req.query));
 
     FabricImport.find(req.query)
         .sort({ 'create_date': 'desc' })
@@ -45,19 +69,19 @@ router.get('/get', (req, res, next) => {
 
 
 router.get('/getdetails', (req, res, next) => {
-    if(req.query.importid){
-        req.query.importid=new mongoose.mongo.ObjectId(req.query.importid) 
+    if (req.query.importid) {
+        req.query.importid = new mongoose.mongo.ObjectId(req.query.importid)
     }
 
-    console.log('getdetails receiver = '+ JSON.stringify(req.query))
+    console.log('getdetails receiver = ' + JSON.stringify(req.query))
     FabricImportDetail.find(req.query)
-    .sort({ 'create_date': 'desc' })
-    .exec((err, details) => {
-        if (!err) {
-            return res.status(200).send({valid:true,data:details});
-        }
-        return res.status(200).send({valid:false,message: err});
-    })
+        .sort({ 'create_date': 'desc' })
+        .exec((err, details) => {
+            if (!err) {
+                return res.status(200).send({ valid: true, data: details });
+            }
+            return res.status(200).send({ valid: false, message: err });
+        })
 
 })
 
@@ -90,7 +114,7 @@ updateWarehouse = (ftype, fcolor, imet, iroll) => {
 }
 
 createnewTransaction = (tran) => {
-    tran.create_date=new Date();
+    tran.create_date = new Date();
     return FabricWarehouseTran.create(tran);
 }
 
@@ -112,7 +136,7 @@ createnewImport = (data_com, data_detail) => {
 createnewImportDetail = (newimportid, data_detail) => {
     for (let i = 0; i < data_detail.length; i++) {
         data_detail[i]._id = new mongoose.mongo.ObjectId();
-        data_detail[i].create_date=new Date()
+        data_detail[i].create_date = new Date()
         data_detail[i].importid = newimportid;
     }
     return FabricImportDetail.create(data_detail);
@@ -178,7 +202,7 @@ router.post('/add/', async (req, res, next) => {
                 const newWarehouse = await creatnewWarehouse(pairs.notfound);
                 const create_import = await createnewImport(data_com, data_detail);
                 const create_import_detail = await createnewImportDetail(create_import._id, data_detail);
-                
+
                 //create transtion
                 for (let i = 0; i < pairs.notfound.length; i++) {
                     let row = pairs.notfound[i];
@@ -226,7 +250,7 @@ findDetailByImportId = (importid) => {
     return FabricImportDetail.find({ importid: importid });
 }
 
-findWarehouseTran =(req)=>{
+findWarehouseTran = (req) => {
     return FabricWarehouseTran.find(req);
 }
 
