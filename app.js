@@ -11,6 +11,7 @@ const db = require('./db');
 const uploadRouter = require('./routes/upload');
 const authRouter = require('./routes/auth');
 const pdfCategoryRouter = require('./routes/report/reportcategory')
+const pdfRouter = require('./routes/report/report')
 
 const fabricproviderRouter =  require('./routes/fabric/fabricprovider');
 const fabriccolorRouter =require('./routes/fabric/fabriccolor');
@@ -78,6 +79,7 @@ app.use('/api/admin/dept', deptRoute);
 
 app.use('/api/upload',uploadRouter);
 app.use('/api/pdf/category',pdfCategoryRouter);
+app.use('/api/pdf/report',pdfRouter);
 
 app.use('/api/fabric/provider',fabricproviderRouter);
 app.use('/api/fabric/type',fabrictypeRouter);

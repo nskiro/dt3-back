@@ -42,7 +42,10 @@ router.get('/:deptId', (req, res, next) => {
         .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {
-                const resData = makeCategoryTree(doc);
+                let resData = null
+                if(doc.length > 0){
+                    resData = makeCategoryTree(doc);
+                }
                 return res.status(200).send(resData);
             }
             return res.status(500).send(err);
@@ -52,7 +55,7 @@ router.get('/:deptId', (req, res, next) => {
 router.post('/add', (req, res, next) => {
     const categoryObj = {
         categoryName: req.body.categoryName,
-        parentId: req.body.parentId,
+        parentId: req.body.parentId !== '' ? req.body.parentId : null,
         dept: req.body.dept,
         create_date: new Date()
     }
@@ -66,7 +69,7 @@ router.post('/add', (req, res, next) => {
                         const resData = makeCategoryTree(doc);
                         return res.status(200).send(resData);
                     }
-                    return res.status(500).send(err);
+                    return res.status(500).send(err.response.data);
                 });
         }
     })
