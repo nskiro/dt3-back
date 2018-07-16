@@ -3,9 +3,16 @@ const TestFabricWeight = new mongoose.Schema({
 
     fabricimportdetail_id: { type: mongoose.Schema.Types.ObjectId, ref: 'fabricimportsdetails' },
 
-    test_not: { type: Number, default: null },
+    fabric_type: { type: String, default: null },
+    fabric_color: { type: String, default: null },
+    roll: { type: String, default: null },
+    met: { type: String, default: null },
+
+    test_no: { type: Number, default: null },
     fail_no: { type: Number, default: null },
     note: { type: String, default: null },
+
+    fabric_weight_details: [{ type: mongoose.Schema.Types.ObjectId, ref: 'testfabricweightdetails' }],
 
     start_date: { type: Date, default: null },
     end_date: { type: Date, default: null },
@@ -13,8 +20,11 @@ const TestFabricWeight = new mongoose.Schema({
     create_date: { type: Date, default: null },
     update_date: { type: Date, default: null },
     record_status: { type: String, default: 'O' }
+
 });
+
 TestFabricWeight.virtual('id').get(function () {
     return this._id;
 });
+
 module.exports = mongoose.model('testfabricweights', TestFabricWeight);
