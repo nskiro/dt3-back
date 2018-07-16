@@ -29,6 +29,7 @@ findMenus = () => {
 copyMenuData = (mi) => {
     let item = {
         menu_label: mi.menu_label,
+        extra_params: mi.extra_params,
         menu_parent_id: mi.menu_parent_id,
         access_link_id: mi.access_link_id,
         create_date: mi.create_date,
@@ -40,7 +41,16 @@ copyMenuData = (mi) => {
         __v: mi.__v
     };
     if (mi.access_link_id) {
-        item.url = mi.access_link_id.name
+        if(mi.extra_params){
+            let arrUrl = mi.access_link_id.name.split('/:')
+            item.url = arrUrl[0]
+            _.forEach(mi.extra_params, o => {
+                item.url = item.url + '/' + o
+            })
+        }
+        else{
+            item.url = mi.access_link_id.name
+        }
     }
 
     return item;

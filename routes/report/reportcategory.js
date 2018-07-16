@@ -48,7 +48,7 @@ router.get('/:deptId', (req, res, next) => {
                 }
                 return res.status(200).send(resData);
             }
-            return res.status(500).send(err);
+            return res.status(404).send(err);
         });
 })
 

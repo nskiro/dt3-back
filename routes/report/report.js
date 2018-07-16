@@ -4,7 +4,6 @@ const _ = require('lodash')
 const report = require('../../Schema/PDFReport/Report')
 
 router.get('/read/:reportId', (req, res, next) => {
-    console.log('read')
     report.findById(req.params.reportId, (err, doc) => {
         if (!err)
             return res.status(200).send(doc.reportFile)
@@ -13,7 +12,7 @@ router.get('/read/:reportId', (req, res, next) => {
 })
 
 router.get('/', (req, res, next) => {
-    report.find({ user: req.query.user, record_status: 'O' }, { reportFile: false })
+    report.find({ ...req.query, record_status: 'O' }, { reportFile: false })
         .populate({ path: 'category', match: { record_status: 'O' } })
         .exec((err, doc) => {
             if (!err) {

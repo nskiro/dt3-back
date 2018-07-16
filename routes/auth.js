@@ -94,7 +94,7 @@ router.post('/login', (req, res, next) => {
                     }
                 }
 
-
+                console.log(userMenu);
                 const jsonMenu = dequy(userMenu);
                 let resData = { ...doc };
                 delete resData._doc.password;
