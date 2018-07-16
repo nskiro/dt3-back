@@ -5,23 +5,38 @@ var router = express.Router();
 const FabricRelax = require('../../Schema/TestFabric/TestFabricRelax');
 const FabricRelaxDetail = require('../../Schema/TestFabric/TestFabricRelaxDetail');
 
-const _ =require('lodash')
+const _ = require('lodash')
 
-createRelax =(relax)=>{
-    return  FabricRelax.create(relax)
+createRelax = (relax) => {
+    return FabricRelax.create(relax)
 }
 
-createRelaxDetail =(relaxdetails) =>{
+createRelaxDetail = (relaxdetails) => {
     return FabricRelaxDetail.create(relaxdetails)
 }
 
+getRelaxDetail = (cond) => {
+    return FabricRelaxDetail.find(cond)
+}
+
 router.get('/get', (req, res, next) => {
-    req.query.record_status = 'O';
+    req.query.record_status = 'O'
+    if (req.query.detail_ids) {
+        let details = []
+        for (let i = 0; i < req.query.detail_ids.length; i++) {
+            details.push(new mongoose.mongo.ObjectId(req.query.detail_ids[i]))
+        }
+        delete req.query.detail_ids
+        req.query.fabricimportdetail_id = { $in: details }
+    }
+
     FabricRelax.find(req.query)
         .sort({ 'create_date': 'desc' })
+        .populate({ path: 'fabric_relax_detail_id', match: { record_status: 'O' } })
         .exec((err, relax_data) => {
-            if (!err)
+            if (!err) {
                 return res.status(200).send({ valid: true, data: relax_data });
+            }
             else
                 return res.status(200).send({ valid: false, messsage: err });
         })
@@ -30,39 +45,61 @@ router.get('/get', (req, res, next) => {
 
 
 router.post('/add/', (req, res, next) => {
-    let relax = {
-        fabricimportdetail_id: new mongoose.mongo.ObjectId(req.body.importdetail_id),
-        relax: req.body.relax? parseFloat(req.body.relax).toFixed(2) :0.0,
-        condition_hours: req.body.condition_hours? parseFloat(req.body.condition_hours).toFixed(2) :0.0,
-        note: req.body.note,
-        start_date: new Date (req.body.start_date),
-        end_date: new Date (req.body.end_date),
-        create_date: new Date(),
-    };
+    if (req.body) {
+        _.forEach(req.body, async (r) => {
+            for (let i = 0; i < r.fabric_relax_detail_id.length; i++) {
+                delete r.fabric_relax_detail_id[i]._id
+                r.fabric_relax_detail_id[i].create_date = new Date()
+            }
+            let save_detail = await createRelaxDetail(r.fabric_relax_detail_id);
+            let save_detail_ids = _.map(save_detail, '_id')
+            let relax = {
+                fabricimportdetail_id: new mongoose.mongo.ObjectId(r._id),
+                relax: r.relax ? parseFloat(r.relax).toFixed(2) : 0.0,
+                condition_hours: r.condition_hours ? parseFloat(r.condition_hours) * 1.0 : 0.0,
+                note: r.note,
+                //start_date: new Date (r.start_date),
+                // end_date: new Date (r.end_date),
+                create_date: new Date(),
+                fabric_relax_detail_id: save_detail_ids
+            };
 
-    FabricRelax.create(relax, async(err, relax) => {
-        console.log(err);
-        if (!err) {
-            let id= relax._id;
-            let details = []
-            _.forEach(req.body.details,(r)=>{
-                details.push({
-                    fabricrelax_id:new mongoose.mongo.ObjectId(id),
-                    no_roll: r.no_roll,
-                    no_met: r.no_met,
-                    note: r.note,
-                    create_date:new Date()
-                })
-            });
-            let detail_result= await createRelaxDetail(details);
-            console.log('detail_result ==>' + JSON.stringify(detail_result));
-            return res.status(200).send({valid:true,data:relax});
-        }
-        return res.status(200).send({valid:false, messaga: err});
-    })
+            if (r.start_date) {
+                try {
+                    console.log('r.start_date  =>' + r.start_date)
+                    relax.start_date = moment(r.start_date).toDate()
+                } catch (err) {
+
+                }
+            }
+
+            if (r.end_date) {
+                try {
+                    relax.start_date = moment(r.end_date).toDate()
+                } catch (err) {
+
+                }
+            }
+            let save_relax = await createRelax(relax);
+
+        })
+        return res.status(200).send({ valid: true });
+    }
+    return res.status(200).send({ valid: false, messsage: 'no data for fabric relax save' });
 });
 
+router.post('/update/', (req, res, next) => {
+    if (req.body) {
+        console.log('req.body =>' + JSON.stringify(req.body));
+        _.forEach(req.body, (r) => {
 
+        })
+        return res.status(200).send({ valid: true });
+
+    }
+
+    return res.status(200).send({ valid: false, messsage: 'no data for fabric relax update' });
+})
 
 
 module.exports = router;
