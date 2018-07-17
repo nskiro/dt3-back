@@ -27,6 +27,7 @@ findMenus = () => {
     return Menus.find({ record_status: 'O' });
 }
 copyMenuData = (mi) => {
+    console.log(mi)
     let item = {
         menu_label: mi.menu_label,
         extra_params: mi.extra_params,
@@ -41,7 +42,8 @@ copyMenuData = (mi) => {
         __v: mi.__v
     };
     if (mi.access_link_id) {
-        if(mi.extra_params){
+        if(mi.extra_params.length > 0){
+            console.log(mi.access_link_id)
             let arrUrl = mi.access_link_id.name.split('/:')
             item.url = arrUrl[0]
             _.forEach(mi.extra_params, o => {
@@ -82,6 +84,7 @@ router.get('/getwithlabels', (req, res, next) => {
         delete cond.menu_parent;
     }
     Menus.find(cond)
+        .populate({path: 'access_link_id', match: { record_status: 'O' }})
         .sort({ 'menu_label': 'asc' })
         .exec(async (err, ms) => {
             if (!err) {
@@ -93,7 +96,7 @@ router.get('/getwithlabels', (req, res, next) => {
                         if (findMenuParent.length > 0) { item.menu_parent_label = findMenuParent[0].menu_label; }
                     }
                     if (item.access_link_id) {
-                        let findAccessLink = await findAccessLinkNameById(item.access_link_id);
+                        let findAccessLink = await findAccessLinkNameById(item.access_link_id._id);
                         if (findAccessLink.length > 0) { item.access_link_name = findAccessLink[0].name; }
                     }
                     data_returned.push(item);

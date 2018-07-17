@@ -22,8 +22,8 @@ dequy = (data, parentId = null) => {
             if (item) {
                 return { ...item, children: dequy(data, item._id) };
             }
-            else { 
-                return { ...item, children: [] }; 
+            else {
+                return { ...item, children: [] };
             }
         });
     }
@@ -42,7 +42,7 @@ router.post('/login', (req, res, next) => {
         .populate({ path: 'role', match: { record_status: 'O' }, populate: { path: 'menu', match: { record_status: 'O' } } })
         .populate({ path: 'dept', match: { record_status: 'O' } })
         .exec(async (err, doc) => {
-            if(!doc){
+            if (!doc) {
                 return res.status(401).send('Invalid username or password');
             }
             if (!err) {
@@ -74,62 +74,57 @@ router.post('/login', (req, res, next) => {
                     })
                 });
 
-                // User Menu
-                let userMenu = [];
-
-                let cond_links = { _id: { $in: roles_id }, record_status: 'O' };
-                let menus = await findMenuAccessLink(cond_links);
-                let links = [];
-                for (let i = 0; i < menus.length; i++) {
-                    for (let j = 0; j < menus[i].menu.length; j++) {
-                        if (menus[i].menu[j].access_link_id) {
-                            if (_.findIndex(links, { _id: menus[i].menu[j].access_link_id._id }) < 0) {
-                                links.push(menus[i].menu[j].access_link_id);
-                            }
-                        }
-
-                        if (_.findIndex(userMenu, { _id: menus[i].menu[j]._id }) < 0) {
-                            userMenu.push(copyMenuData(menus[i].menu[j]));
-                        }
-                    }
-                }
-
-                console.log(userMenu);
-                const jsonMenu = dequy(userMenu);
                 let resData = { ...doc };
                 delete resData._doc.password;
                 resData._doc.group = groups;
                 resData._doc.role = _.uniq(_.union(roles, subRoles));
-                resData._doc.menu = jsonMenu;
-                resData._doc.link = links;
+
 
                 const tokenStr = jwt.makeToken(resData._doc);
-                //console.log('tokenStr=>' + tokenStr);
                 if (tokenStr) {
                     resData._doc.token = tokenStr;
                 }
 
-                return res.status(200).send(resData._doc);
+                let menu = []
+                let link = []
+                Role.find({ _id: { $in: roles_id }, record_status: 'O' })
+                    .populate({
+                        path: 'menu',
+                        match: {
+                            record_status: 'O',
+                        },
+                        populate: {
+                            path: 'access_link_id',
+                            match: { record_status: 'O' }
+                        }
+                    })
+                    .exec((err, doc) => {
+                        _.forEach(doc, roleItem => {
+                            _.forEach(roleItem.menu, menuItem => {
+                                if (_.findIndex(menu, menuItem) < 0) {
+                                    menu.push(menuItem)
+                                }
+                                if (_.findIndex(link, menuItem.access_link_id) < 0 && menuItem.access_link_id !== null) {
+                                    link.push(menuItem.access_link_id)
+                                }
+                            })
+                        })
+                        resData._doc.menu = makeMenuTree(menu);
+                        resData._doc.link = link;
 
-                /*
-                menu.find({ record_status: 'O' }, async (err, docs) => {
-                   // console.log('Links =>' + JSON.stringify(links));
-                    //
-
-                });
-                */
+                        return res.status(200).send(resData._doc);
+                    })
             }
-            //return res.status(500).send(err);
-        });
-});
-
-router.put('/changepassword', (req, res, next) => {
-    user.findByIdAndUpdate(req.body.pId, { password: req.body.password, update_date: new Date() }, { new: true },(err,doc)=>{
-        if(!err){
-            return res.status(200).send(doc);
-        }
-        return res.status(500).send(err);
+        })
     })
-})
 
-module.exports = router;
+    router.put('/changepassword', (req, res, next) => {
+        user.findByIdAndUpdate(req.body.pId, { password: req.body.password, update_date: new Date() }, { new: true }, (err, doc) => {
+            if (!err) {
+                return res.status(200).send(doc);
+            }
+            return res.status(500).send(err);
+        })
+    })
+
+    module.exports = router;

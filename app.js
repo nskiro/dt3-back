@@ -27,7 +27,7 @@ const testbricweightRouter= require('./routes/testfabric/testfabricweight');
 
 
 const accessLinkRouter = require('./routes/auth/accesslink');
-const menusRouter = require('./routes/auth/menu');
+const menusRouter = require('./routes/auth/menu2');
 
 // admin route
 const groupRoute = require('./routes/auth/group');

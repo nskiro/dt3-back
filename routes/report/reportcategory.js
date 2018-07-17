@@ -21,6 +21,7 @@ makeCategoryTree = (data, parentId = null) => {
                     title: item.categoryName,
                     key: item._id,
                     value: item._id,
+                    dept: item.dept,
                     children: makeCategoryTree(data, item._id)
                 }
             }
@@ -30,7 +31,8 @@ makeCategoryTree = (data, parentId = null) => {
                     parentId: item.parentId,
                     title: item.categoryName,
                     key: item._id,
-                    value: item._id
+                    value: item._id,
+                    dept: item.dept
                 }
             }
         });
