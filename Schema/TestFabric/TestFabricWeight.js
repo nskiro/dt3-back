@@ -12,7 +12,7 @@ const TestFabricWeight = new mongoose.Schema({
     fail_no: { type: Number, default: null },
     note: { type: String, default: null },
 
-    fabric_weight_details: [{ type: mongoose.Schema.Types.ObjectId, ref: 'testfabricweightdetails' }],
+    details: [{ type: mongoose.Schema.Types.ObjectId, ref: 'testfabricweightdetails' }],
 
     start_date: { type: Date, default: null },
     end_date: { type: Date, default: null },

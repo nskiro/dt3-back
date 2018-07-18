@@ -216,11 +216,7 @@ router.post(`/update/:id/`, async (req, res, next) => {
     console.log('id = >' + id);
     let data_com = req.body.data;
     let data_detail = req.body.detail;
-    //console.log('request => ' + JSON.stringify(data_com));
-    //console.log('params => ' + JSON.stringify(data_detail));
-
     let conditions = createConditionFindTypeAndColor(data_detail);
-
     FabricWarehouse.find(conditions)
         .exec(async (err, fabricwarehouse) => {
             if (!err) {

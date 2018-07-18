@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+//const TestFabricRelaxDetail =require('./TestFabricRelaxDetail')
 const TestFabricRelax = new mongoose.Schema({
 
     fabricimportdetail_id: { type: mongoose.Schema.Types.ObjectId, ref: 'fabricimportsdetails' },
@@ -16,7 +17,6 @@ const TestFabricRelax = new mongoose.Schema({
     create_date: { type: Date, default: null },
     update_date: { type: Date, default: null },
     record_status: { type: String, default: 'O' }
-
 
 });
 TestFabricRelax.virtual('id').get(function () {
