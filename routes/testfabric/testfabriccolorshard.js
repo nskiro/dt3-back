@@ -70,6 +70,8 @@ router.post('/save/', (req, res, next) => {
             } else {
                 colorshard._id = new mongoose.mongo.ObjectId(colorshard._id);
             }
+
+
             for (let i = 0; i < colorshard.details.length; i++) {
                 if (colorshard.details[i]._id.length !== 24) {
                     colorshard.details[i]._id = new mongoose.mongo.ObjectId()
@@ -86,6 +88,8 @@ router.post('/save/', (req, res, next) => {
                 colorshard.details[i].colorshard_id = colorshard._id
                 detail_ids.push(colorshard.details[i]._id)
             }
+   
+
             await saveColorShardDetails(colorshard.details);
 
             let cond = { _id: new mongoose.mongo.ObjectId(colorshard._id) }
@@ -97,12 +101,31 @@ router.post('/save/', (req, res, next) => {
                 u_colorshard.fail_no = colorshard.fail_no
                 u_colorshard.note = colorshard.note
                 u_colorshard.details = detail_ids
+
+                if(colorshard.start_date){
+                    const start_date = moment(colorshard.start_date,'MM/DD/YYYY').toDate()
+                    u_colorshard.start_date= start_date
+                }
+                if( colorshard.end_date){
+                    const end_date = moment(colorshard.end_date,'MM/DD/YYYY'). toDate()
+                    u_colorshard.end_date= end_date
+                }
+
                 await saveColorShard(u_colorshard)
 
             } else {
                 colorshard.record_status = 'O'
                 colorshard.create_date = new Date()
                 colorshard.details = detail_ids
+
+                if(colorshard.start_date){
+                    const start_date = moment(colorshard.start_date,'MM/DD/YYYY').toDate()
+                    colorshard.start_date= start_date
+                }
+                if( colorshard.end_date){
+                    const end_date = moment(colorshard.end_date,'MM/DD/YYYY'). toDate()
+                    colorshard.end_date= end_date
+                }
                 await saveColorShard(colorshard)
             }
 

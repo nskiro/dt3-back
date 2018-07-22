@@ -34,7 +34,6 @@ saveWeight = (weight) => {
     delete update.__v
     let options = { upsert: true }
     return FabricWeight.update(cond, update, options)
-
 }
 
 findWeight = (cond) => {
@@ -66,7 +65,7 @@ router.get('/get', (req, res, next) => {
 
 })
 
-router.post('/add/', (req, res, next) => {
+router.post('/save/', (req, res, next) => {
     const data = req.body
     if (data) {
         _.forEach(data, async (weight) => {
@@ -76,6 +75,7 @@ router.post('/add/', (req, res, next) => {
             } else {
                 weight._id = new mongoose.mongo.ObjectId(weight._id);
             }
+
             for (let i = 0; i < weight.details.length; i++) {
                 if (weight.details[i]._id.length !== 24) {
                     weight.details[i]._id = new mongoose.mongo.ObjectId()
@@ -100,12 +100,31 @@ router.post('/add/', (req, res, next) => {
                 u_weight.fail_no = weight.fail_no
                 u_weight.note = weight.note
                 u_weight.details = detail_ids
+                
+                if(weight.start_date){
+                    const start_date = moment(weight.start_date,'MM/DD/YYYY').toDate()
+                    u_weight.start_date= start_date
+                }
+                if( weight.end_date){
+                    const end_date = moment(weight.end_date,'MM/DD/YYYY'). toDate()
+                    u_weight.end_date= end_date
+                }
+
                 await saveWeight(u_weight)
 
             } else {
                 weight.record_status = 'O'
                 weight.create_date = new Date()
                 weight.details = detail_ids
+
+                if(weight.start_date){
+                    const start_date = moment(weight.start_date,'MM/DD/YYYY').toDate()
+                    weight.start_date= start_date
+                }
+                if( weight.end_date){
+                    const end_date = moment(weight.end_date,'MM/DD/YYYY'). toDate()
+                    weight.end_date= end_date
+                }
                 await saveWeight(weight)
             }
 
@@ -116,14 +135,5 @@ router.post('/add/', (req, res, next) => {
     return res.status(200).send({ valid: false, messsage: 'no data for fabric weight save' });
 
 })
-
-
-router.post('/update/', (req, res, next) => {
-
-    return res.status(200).send({ valid: true });
-
-})
-
-
 
 module.exports = router;
