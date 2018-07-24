@@ -5,7 +5,11 @@ var imgPath = 'assets/images/avatar-placeholder.png';
 const dept = require('../../Schema/Auth/DepartmentInfo');
 
 router.get('/', (req, res, next) => {
-    dept.find({ record_status: 'O' })
+    let cond = { record_status: 'O' }
+    if(req.query.id){
+        cond._id = req.query.id
+    }
+    dept.find(cond)
         .exec((err, doc) => {
             if (!err) {
                 return res.status(200).send(doc);
