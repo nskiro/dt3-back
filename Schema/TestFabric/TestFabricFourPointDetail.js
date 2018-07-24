@@ -11,7 +11,7 @@ const TestFabricFourPointDetail = new mongoose.Schema({
     width_stick :{type:Number,default:null},
     width_actual:{type:Number, default:null},
 
-    points: {type:Number,default:null},
+    points: {type:String,default:null},
    
     slub_nep:  {type:Number,default:null},
     fly_spot:  {type:Number,default:null},
@@ -25,8 +25,8 @@ const TestFabricFourPointDetail = new mongoose.Schema({
 
     total_point:  {type:Number,default:null},
     defective_point:  {type:Number,default:null},
-    result:  {type:Number,default:null},
-    detail_note:  {type:Number,default:null},
+    result:  {type:String,default:null},
+    detail_note:  {type:String,default:null},
     photo_defect:  {type:String,default:null},
 
     create_date: { type: Date, default: null },
