@@ -1,3 +1,4 @@
+
 var express = require('express');
 var mongoose = require('mongoose');
 var router = express.Router();
@@ -119,7 +120,7 @@ router.post('/add/', (req, res, next) => {
 
             if (r.end_date) {
                 try {
-                    relax.start_date = moment(r.end_date, 'MM/DD/YYYY').toDate()
+                    relax.end_date = moment(r.end_date,'MM/DD/YYYY').toDate()
                 } catch (err) {
 
                 }
@@ -159,10 +160,26 @@ router.post('/update/', (req, res, next) => {
                 relax: r.relax ? parseFloat(r.relax).toFixed(2) : 0.0,
                 condition_hours: r.condition_hours ? parseFloat(r.condition_hours) * 1.0 : 0.0,
                 note: r.note,
-                create_date: new Date(),
                 update_date: new Date(),
                 fabric_relax_detail_id: save_detail_ids
             };
+
+            if (r.start_date) {
+                try {
+                    relax.start_date = moment(r.start_date, 'MM/DD/YYYY').toDate()
+                } catch (err) {
+
+                }
+            }
+
+            if (r.end_date) {
+                try {
+                    relax.end_date = moment(r.end_date, 'MM/DD/YYYY').toDate()
+                } catch (err) {
+
+                }
+            }
+
             await updateRelax(relax);
         })
         return res.status(200).send({ valid: true });

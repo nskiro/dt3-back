@@ -24,7 +24,9 @@ const fabricwarehouseRouter =require('./routes/fabric/fabricwarehouse');
 // test fabric
 const testfabricrelaxRouter = require('./routes/testfabric/testfabricrelax');
 const testbricweightRouter= require('./routes/testfabric/testfabricweight');
-
+const testbricskewRouter= require('./routes/testfabric/testfabricskews');
+const testbricfourpointRouter= require('./routes/testfabric/testfabricfourpoint');
+const testbriccolorshardRouter= require('./routes/testfabric/testfabriccolorshard');
 
 const accessLinkRouter = require('./routes/auth/accesslink');
 const menusRouter = require('./routes/auth/menu2');
@@ -90,6 +92,10 @@ app.use('/api/fabric/warehouse',fabricwarehouseRouter);
 
 app.use('/api/testfabric/relax',testfabricrelaxRouter);
 app.use('/api/testfabric/weight',testbricweightRouter);
+app.use('/api/testfabric/skew',testbricskewRouter);
+app.use('/api/testfabric/fourpoint',testbricfourpointRouter);
+app.use('/api/testfabric/colorshard',testbriccolorshardRouter);
+
 
 app.use('/api/admin/accesslink',accessLinkRouter);
 app.use('/api/admin/menu',menusRouter);

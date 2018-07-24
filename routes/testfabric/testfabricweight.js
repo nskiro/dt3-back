@@ -33,9 +33,7 @@ saveWeight = (weight) => {
     delete update._id
     delete update.__v
     let options = { upsert: true }
-    console.log('saveWeight =>' + JSON.stringify(weight))
     return FabricWeight.update(cond, update, options)
-
 }
 
 findWeight = (cond) => {
@@ -45,7 +43,6 @@ router.get('/get', (req, res, next) => {
     if (!req.query.record_status) {
         req.query.record_status = 'O'
     }
-    console.log('req.query._ids =>' + JSON.stringify(req.query._ids))
     if (req.query._ids) {
         let ids = []
         for (let i = 0; i < req.query._ids.length; i++) {
@@ -54,7 +51,6 @@ router.get('/get', (req, res, next) => {
         delete req.query._ids
         req.query._id = { $in: ids }
     }
-    console.log('FabricWeight get with => ' + JSON.stringify(req.query))
     FabricWeight.find(req.query)
         .sort({ 'create_date': 'desc' })
         .populate({ path: 'details', match: { record_status: 'O' } })
@@ -69,7 +65,7 @@ router.get('/get', (req, res, next) => {
 
 })
 
-router.post('/add/', (req, res, next) => {
+router.post('/save/', (req, res, next) => {
     const data = req.body
     if (data) {
         _.forEach(data, async (weight) => {
@@ -79,6 +75,7 @@ router.post('/add/', (req, res, next) => {
             } else {
                 weight._id = new mongoose.mongo.ObjectId(weight._id);
             }
+
             for (let i = 0; i < weight.details.length; i++) {
                 if (weight.details[i]._id.length !== 24) {
                     weight.details[i]._id = new mongoose.mongo.ObjectId()
@@ -96,8 +93,6 @@ router.post('/add/', (req, res, next) => {
 
             let cond = { _id: new mongoose.mongo.ObjectId(weight._id) }
             let find_rs = await findWeight(cond)
-            console.log('findWeight =>' + JSON.stringify(find_rs))
-
             if (find_rs && find_rs.length > 0) {
                 let u_weight = { ...find_rs[0]._doc }
                 u_weight.update_date = new Date()
@@ -105,15 +100,32 @@ router.post('/add/', (req, res, next) => {
                 u_weight.fail_no = weight.fail_no
                 u_weight.note = weight.note
                 u_weight.details = detail_ids
+                
+                if(weight.start_date){
+                    const start_date = moment(weight.start_date,'MM/DD/YYYY').toDate()
+                    u_weight.start_date= start_date
+                }
+                if( weight.end_date){
+                    const end_date = moment(weight.end_date,'MM/DD/YYYY'). toDate()
+                    u_weight.end_date= end_date
+                }
+
                 await saveWeight(u_weight)
 
-                // console.log('found =>' + JSON.stringify(find_rs[0]))
             } else {
                 weight.record_status = 'O'
                 weight.create_date = new Date()
                 weight.details = detail_ids
-                //await saveWeight(weight)
-                console.log('new =>' + JSON.stringify(weight))
+
+                if(weight.start_date){
+                    const start_date = moment(weight.start_date,'MM/DD/YYYY').toDate()
+                    weight.start_date= start_date
+                }
+                if( weight.end_date){
+                    const end_date = moment(weight.end_date,'MM/DD/YYYY'). toDate()
+                    weight.end_date= end_date
+                }
+                await saveWeight(weight)
             }
 
         })
@@ -123,14 +135,5 @@ router.post('/add/', (req, res, next) => {
     return res.status(200).send({ valid: false, messsage: 'no data for fabric weight save' });
 
 })
-
-
-router.post('/update/', (req, res, next) => {
-
-    return res.status(200).send({ valid: true });
-
-})
-
-
 
 module.exports = router;

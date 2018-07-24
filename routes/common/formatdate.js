@@ -3,4 +3,4 @@ const formatDate = {
     shortType: 'MM/DD/YYYY'
 }
 
-export { formatDate }
+export  { formatDate }
