@@ -70,3 +70,6 @@ package-lock.json
 # End of https://www.gitignore.io/api/node
 db.js
 start-mongodb.bat
+
+public/
+public/FILES/

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const report = new mongoose.Schema({
     reportName: { type: String, default: null },
-    reportFile: { type: Buffer, default: null },
+    reportFile: { type: String, default: null },
     category: {type: mongoose.Schema.Types.ObjectId, ref: 'reportcategories' },
     dept: {type: mongoose.Schema.Types.ObjectId, ref: 'departmentinfos'},
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
