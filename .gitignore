@@ -71,4 +71,4 @@ package-lock.json
 db.js
 start-mongodb.bat
 
-public_file/
+public_file/files/
