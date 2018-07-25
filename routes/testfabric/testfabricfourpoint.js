@@ -62,9 +62,9 @@ router.get('/get', (req, res, next) => {
 
 router.post('/save/', (req, res, next) => {
     const data = req.body
-    console.log('four point save =>' +JSON.stringify(data))
     if (data) {
         _.forEach(data, async (fourpoint) => {
+            console.log('save fourpoint  =>'+JSON.stringify(fourpoint))
             let detail_ids = []
             if (fourpoint._id.length !== 24) {
                 fourpoint._id = new mongoose.mongo.ObjectId();
@@ -89,16 +89,15 @@ router.post('/save/', (req, res, next) => {
                 detail_ids.push(fourpoint.details[i]._id)
             }
 
+            await saveFourPointDetails(fourpoint.details);
 
-           // await saveFourPointDetails(fourpoint.details);
-            
             let cond = { _id: new mongoose.mongo.ObjectId(fourpoint._id) }
             let find_rs = await findFourPoint(cond)
             if (find_rs && find_rs.length > 0) {
                 let u_FourPoint = { ...find_rs[0]._doc }
                 u_FourPoint.update_date = new Date()
                 u_FourPoint.inspect_no = fourpoint.inspect_no
-                u_FourPoint.color_dif= fourpoint.color_dif
+                u_FourPoint.color_dif = fourpoint.color_dif
                 u_FourPoint.fail_no = fourpoint.fail_no
                 u_FourPoint.note = fourpoint.note
                 u_FourPoint.details = detail_ids
@@ -113,7 +112,6 @@ router.post('/save/', (req, res, next) => {
                 }
 
                 await saveFourPoint(u_FourPoint)
-
             } else {
                 fourpoint.record_status = 'O'
                 fourpoint.create_date = new Date()
