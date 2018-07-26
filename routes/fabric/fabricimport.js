@@ -55,8 +55,6 @@ router.get('/get', (req, res, next) => {
         req.query.record_status = 'O';
     }
 
-    console.log('query ===> ' + JSON.stringify(req.query));
-
     FabricImport.find(req.query)
         .sort({ 'create_date': 'desc' })
         .exec((err, fabricwarehouse) => {
@@ -258,6 +256,28 @@ findImportByImportId = (importid) => {
     var o_id = new mongoose.mongo.ObjectID(importid);
     return FabricImport.find({ _id: o_id });
 }
+
+
+router.post('/updatetested/:id/',  (req, res, next) => {
+    let id = req.params.id
+    if (id) {
+        let data = {
+            record_status: 'Q',
+            update_date: new Date(),
+            $inc: { __v: 1 }
+        }
+        FabricImport.findByIdAndUpdate(id, data, (err, ftype) => {
+            if (!err) {
+                return res.status(200).send({ valid: true, data: ftype });
+            }
+            return res.status(200).send({ valid: true, message: err });
+
+        })
+    } else {
+        return res.status(200).send({ valid: false, message: 'not found id for update test fabric' });
+    }
+
+})
 
 /*
 router.post('/checktranlog/', async (req, res, next) => {
