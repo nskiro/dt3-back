@@ -44,7 +44,7 @@ app.use(cors());
 // file upload setup
 app.use(fileUpload());
 
-app.set('views', path.join(__dirname, 'client/build'));
+app.set('views', path.join(__dirname, 'client'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
@@ -52,8 +52,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'upload')));
-app.use(express.static(path.join(__dirname, 'client')));
+// app.use('/pub/pdf',express.static(path.join(__dirname, 'public_file/pdf')));
 app.use('/user', authRouter);
 app.use('/api/admin/group', groupRoute);
 app.use('/api/admin/role', roleRoute);
@@ -100,9 +99,12 @@ app.use('/api/testfabric/colorshard',testbriccolorshardRouter);
 app.use('/api/admin/accesslink',accessLinkRouter);
 app.use('/api/admin/menu',menusRouter);
 
+app.use(express.static(path.join(__dirname, 'client')));
 app.get('*', (req,res)=>{
   res.render('index');
+  path.join(__dirname, 'public_file/pdf')
 })
+
 // catch 404 and forward to error handler
 app.use((req, res, next)=> {
   next(createError(404));
