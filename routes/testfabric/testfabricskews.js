@@ -95,8 +95,10 @@ router.post('/save/', (req, res, next) => {
                 let u = { ...find_rs[0]._doc }
                 u.update_date = new Date()
                 u.test_no = skew.inspect_no
-                u.fail_no = skew.color_dif
+                u.color_dif = skew.color_dif
                 u.fail_no = skew.fail_no
+                u.test_no = skew.test_no
+                u.condition = skew.condition
                 u.note = skew.note
                 u.details = detail_ids
 

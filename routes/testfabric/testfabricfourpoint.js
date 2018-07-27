@@ -64,7 +64,6 @@ router.post('/save/', (req, res, next) => {
     const data = req.body
     if (data) {
         _.forEach(data, async (fourpoint) => {
-            console.log('save fourpoint  =>'+JSON.stringify(fourpoint))
             let detail_ids = []
             if (fourpoint._id.length !== 24) {
                 fourpoint._id = new mongoose.mongo.ObjectId();

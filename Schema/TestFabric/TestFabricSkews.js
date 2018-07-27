@@ -10,6 +10,7 @@ const TestFabricSkew = new mongoose.Schema({
 
     test_no: { type: Number, default: null },
     fail_no: { type: Number, default: null },
+    condition: { type: Number, default: null },
     note: { type: String, default: null },
 
     details: [{ type: mongoose.Schema.Types.ObjectId, ref: 'testfabricskewdetails' }],

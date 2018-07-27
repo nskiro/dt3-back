@@ -53,6 +53,8 @@ router.get('/get', (req, res, next) => {
 
     if (req.query.record_status != undefined && req.query.record_status.length === 0) {
         req.query.record_status = 'O';
+    } else if (req.query.record_status === 'A') {
+        delete req.query.record_status
     }
 
     FabricImport.find(req.query)
@@ -258,11 +260,32 @@ findImportByImportId = (importid) => {
 }
 
 
-router.post('/updatetested/:id/',  (req, res, next) => {
+router.post('/updatetested/:id/', (req, res, next) => {
     let id = req.params.id
     if (id) {
         let data = {
             record_status: 'Q',
+            update_date: new Date(),
+            $inc: { __v: 1 }
+        }
+        FabricImport.findByIdAndUpdate(id, data, (err, ftype) => {
+            if (!err) {
+                return res.status(200).send({ valid: true, data: ftype });
+            }
+            return res.status(200).send({ valid: true, message: err });
+
+        })
+    } else {
+        return res.status(200).send({ valid: false, message: 'not found id for update test fabric' });
+    }
+
+})
+
+router.post('/updateprocess/:id/', (req, res, next) => {
+    let id = req.params.id
+    if (id) {
+        let data = {
+            record_status: 'P',
             update_date: new Date(),
             $inc: { __v: 1 }
         }

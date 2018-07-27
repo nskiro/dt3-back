@@ -98,7 +98,10 @@ router.post('/save/', (req, res, next) => {
                 let u_colorshard = { ...find_rs[0]._doc }
                 u_colorshard.update_date = new Date()
                 u_colorshard.test_no = colorshard.test_no
-                u_colorshard.fail_no = colorshard.fail_no
+                u_colorshard.roll_no = colorshard.roll_no
+                u_colorshard.group_no = colorshard.group_no
+                u_colorshard.shard_no = colorshard.shard_no
+                
                 u_colorshard.note = colorshard.note
                 u_colorshard.details = detail_ids
 

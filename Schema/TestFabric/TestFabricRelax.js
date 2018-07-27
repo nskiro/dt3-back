@@ -12,7 +12,7 @@ const TestFabricRelax = new mongoose.Schema({
     start_date: { type: Date, default: null },
     end_date: { type: Date, default: null },
 
-    fabric_relax_detail_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'testfabricrelaxdetails' }],
+    details: [{ type: mongoose.Schema.Types.ObjectId, ref: 'testfabricrelaxdetails' }],
 
     create_date: { type: Date, default: null },
     update_date: { type: Date, default: null },
