@@ -119,7 +119,7 @@ createnewTransaction = (tran) => {
 }
 
 createnewImport = (data_com, data_detail) => {
-    var fabs = {
+    const fabs = {
         inputdate_no: data_com.inputdate_no,
         provider_name: data_com.provider_name,
         declare_no: data_com.declare_no,
@@ -129,7 +129,6 @@ createnewImport = (data_com, data_detail) => {
 
         details: data_detail
     };
-    ///console.log('create import  =>' + fabs);
     return FabricImport.create(fabs);
 }
 
@@ -236,7 +235,7 @@ router.post('/add/', async (req, res, next) => {
 
 
 removeOldImport = (importid) => {
-    var o_id = new mongoose.mongo.ObjectID(importid);
+    const o_id = new mongoose.mongo.ObjectID(importid);
     return FabricImport.findByIdAndUpdate(o_id, { record_status: 'C', update_date: new Date() });
 }
 
@@ -255,47 +254,63 @@ findWarehouseTran = (req) => {
 }
 
 findImportByImportId = (importid) => {
-    var o_id = new mongoose.mongo.ObjectID(importid);
+    const o_id = new mongoose.mongo.ObjectID(importid);
     return FabricImport.find({ _id: o_id });
 }
 
+findImport = (cond) => {
+    return FabricImport.find(cond);
+}
 
-router.post('/updatetested/:id/', (req, res, next) => {
+
+router.post('/updatetested/:id/', async(req, res, next) => {
     let id = req.params.id
     if (id) {
-        let data = {
-            record_status: 'Q',
-            update_date: new Date(),
-            $inc: { __v: 1 }
-        }
-        FabricImport.findByIdAndUpdate(id, data, (err, ftype) => {
-            if (!err) {
-                return res.status(200).send({ valid: true, data: ftype });
+        const cond = { _id: new mongoose.mongo.ObjectID(id), record_status: { $nin: ['Q'] } }
+        const find_rs = await findImport(cond)
+        if (!_.isEmpty()) {
+            let data = {
+                record_status: 'Q',
+                update_date: new Date(),
+                $inc: { __v: 1 }
             }
-            return res.status(200).send({ valid: true, message: err });
+            FabricImport.findByIdAndUpdate(id, data, (err, ftype) => {
+                if (!err) {
+                    return res.status(200).send({ valid: true, data: ftype });
+                }
+                return res.status(200).send({ valid: true, message: err });
 
-        })
+            })
+        }else{
+            return res.status(200).send({ valid: true, message: 'not found id not "" for update test fabric' });
+        }
+
     } else {
         return res.status(200).send({ valid: false, message: 'not found id for update test fabric' });
     }
 
 })
 
-router.post('/updateprocess/:id/', (req, res, next) => {
+router.post('/updateprocess/:id/', async (req, res, next) => {
     let id = req.params.id
     if (id) {
-        let data = {
-            record_status: 'P',
-            update_date: new Date(),
-            $inc: { __v: 1 }
-        }
-        FabricImport.findByIdAndUpdate(id, data, (err, ftype) => {
-            if (!err) {
-                return res.status(200).send({ valid: true, data: ftype });
+        const cond = { _id: new mongoose.mongo.ObjectID(id), record_status: { $in: ['P', 'O'] } }
+        const find_rs = await findImport(cond)
+        if (!_.isEmpty(find_rs)) {
+            let data = {
+                record_status: 'P',
+                update_date: new Date(),
+                $inc: { __v: 1 }
             }
-            return res.status(200).send({ valid: true, message: err });
-
-        })
+            FabricImport.findByIdAndUpdate(id, data, (err, ftype) => {
+                if (!err) {
+                    return res.status(200).send({ valid: true, data: ftype });
+                }
+                return res.status(200).send({ valid: true, message: err });
+            })
+        } else {
+            return res.status(200).send({ valid: true, message: 'not found id in [Chưa kiểm, Đang kiểm] for update test fabric' });
+        }
     } else {
         return res.status(200).send({ valid: false, message: 'not found id for update test fabric' });
     }
