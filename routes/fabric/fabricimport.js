@@ -268,7 +268,7 @@ router.post('/updatetested/:id/', async(req, res, next) => {
     if (id) {
         const cond = { _id: new mongoose.mongo.ObjectID(id), record_status: { $nin: ['Q'] } }
         const find_rs = await findImport(cond)
-        if (!_.isEmpty()) {
+        if (!_.isEmpty(find_rs)) {
             let data = {
                 record_status: 'Q',
                 update_date: new Date(),
