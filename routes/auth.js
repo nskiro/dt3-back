@@ -93,6 +93,9 @@ router.post('/login', (req, res, next) => {
                         match: {
                             record_status: 'O',
                         },
+                        options: { 
+                            sort: { '_id': 'asc' } 
+                        }, 
                         populate: {
                             path: 'access_link_id',
                             match: { record_status: 'O' }
