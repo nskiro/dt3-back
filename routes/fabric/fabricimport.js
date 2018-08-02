@@ -58,7 +58,7 @@ router.get('/get', (req, res, next) => {
     }
 
     FabricImport.find(req.query)
-        .sort({ 'create_date': 'desc' })
+        .sort({ 'update_date': 'desc', 'create_date': 'desc' })
         .exec((err, fabricwarehouse) => {
             if (!err) {
                 return res.status(200).send(fabricwarehouse);
@@ -263,7 +263,7 @@ findImport = (cond) => {
 }
 
 
-router.post('/updatetested/:id/', async(req, res, next) => {
+router.post('/updatetested/:id/', async (req, res, next) => {
     let id = req.params.id
     if (id) {
         const cond = { _id: new mongoose.mongo.ObjectID(id), record_status: { $nin: ['Q'] } }
@@ -281,7 +281,7 @@ router.post('/updatetested/:id/', async(req, res, next) => {
                 return res.status(200).send({ valid: true, message: err });
 
             })
-        }else{
+        } else {
             return res.status(200).send({ valid: true, message: 'not found id not "" for update test fabric' });
         }
 

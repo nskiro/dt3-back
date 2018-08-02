@@ -52,7 +52,6 @@ router.get('/get', (req, res, next) => {
         delete req.query.detail_ids
         req.query._id = { $in: details }
     }
-    console.log('relax find detail id = >' + JSON.stringify(req.query))
     FabricRelax.find(req.query)
         .sort({ 'create_date': 'desc' })
         .populate({ path: 'details', match: { record_status: 'O' } })
