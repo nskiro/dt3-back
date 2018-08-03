@@ -20,6 +20,7 @@ router.get('/read/:reportId', (req, res, next) => {
 router.get('/', (req, res, next) => {
     report.find({ ...req.query, record_status: 'O' })
         .populate({ path: 'category', match: { record_status: 'O' } })
+        .sort({reportName: 'desc'})
         .exec((err, doc) => {
             if (!err) {
                 return res.status(200).send(doc);
@@ -32,13 +33,12 @@ router.post('/add', (req, res, next) => {
     if (!req.files)
         return res.status(500).send('No files were uploaded')
     const reportFile = req.files.reportFile
-    const fileName = `${Date.now()}-${reportFile.name}`
-    const fullFilePath = `${rootFilePath}/${fileName}`
+    const fullFilePath = `${rootFilePath}/${reportFile.name}`
     reportFile.mv(fullFilePath, err => {
         if (!err) {
             const dataObj = {
                 reportName: reportFile.name,
-                reportFile: fileName,
+                reportFile: reportFile.name,
                 category: req.body.category,
                 dept: req.body.dept,
                 user: req.body.user,
@@ -57,7 +57,6 @@ router.post('/add', (req, res, next) => {
             })
         }
     })
-
 })
 
 router.delete('/delete', (req, res, next) => {
