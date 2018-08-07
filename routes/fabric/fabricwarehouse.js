@@ -40,10 +40,9 @@ router.get('/getimports', async (req, res, next) => {
         let qr_import_detail = {};
         let qr_import = {};
 
-        if (req.query.order_from) { orderids.$gte = parseInt(req.query.order_from); }
-        if (req.query.order_to) { orderids.$lte = parseInt(req.query.order_to); }
+        if (req.query.order_from) { orderids.$gte = parseFloat(req.query.order_from); }
+        if (req.query.order_to) { orderids.$lte = parseFloat(req.query.order_to); }
         if (!_.isEmpty(orderids)) { qr_import_detail['orderid'] = orderids; }
-        //console.log('Tới day 4');
 
         if (req.query.fabric_color) {
             if (req.query.fabric_color.length != 0) { qr_import_detail['fabric_color'] = {$regex:req.query.fabric_color}; }
@@ -78,14 +77,14 @@ router.get('/getimports', async (req, res, next) => {
         let data_imports_detail = {};
 
         if (!_.isEmpty(qr_import) && !_.isEmpty(qr_import_detail)) {
-            qr_import.record_status = 'O';
-            qr_import_detail.record_status = 'O';
+            //qr_import.record_status = 'O';
+            //qr_import_detail.record_status = 'O';
             data_imports = await findImports(qr_import);
             data_imports_detail = await findImportsDetail(qr_import_detail);
 
         } else {
             if (!_.isEmpty(qr_import)) {
-                qr_import.record_status = 'O';
+               // qr_import.record_status = 'O';
                 data_imports = await findImports(qr_import);
 
                 let data_ids = [];
@@ -97,16 +96,15 @@ router.get('/getimports', async (req, res, next) => {
                 data_imports_detail = await findImportsDetail({ importid: { $in: data_ids }, record_status: 'O' });
 
             } else if (!_.isEmpty(qr_import_detail)) {
-                qr_import_detail.record_status = 'O';
+                //qr_import_detail.record_status = 'O';
                 data_imports_detail = await findImportsDetail(qr_import_detail);
-
                 let data_ids = [];
                 for (let i = 0; i < data_imports_detail.length; i++) {
                     if (data_ids.indexOf(data_imports_detail[i].importid) === -1) {
-                        data_ids.push(data_imports_detail[i].importid);
+                        data_ids.push(new mongoose.mongo.ObjectId(data_imports_detail[i].importid));
                     }
                 }
-                data_imports = await findImports({ _id: { $in: data_ids }, record_status: 'O' });
+                data_imports = await findImports({ _id: { $in: data_ids } });
             }
         }
         //filter 
@@ -137,12 +135,10 @@ router.get('/getimports', async (req, res, next) => {
 
 
 findExports = (req) => {
-    console.log('findExports =>' + JSON.stringify(req));
     return FabricExport.find(req);
 }
 
 findExportsDetail = (req) => {
-    console.log('findExportsDetail =>' + JSON.stringify(req));
     return FabricExportDetail.find(req).sort({ 'inputdate_no': 'asc' });
 }
 

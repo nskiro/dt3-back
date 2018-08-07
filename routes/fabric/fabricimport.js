@@ -21,8 +21,19 @@ router.get('/get', (req, res, next) => {
         delete req.query.declare_dates;
     }
     if (req.query.orderid) {
-        req.query['details.orderid'] = req.query.orderid;
+        req.query['details.orderid'] = parseFloat(req.query.orderid);
         delete req.query.orderid;
+    }
+
+    let cond_orderid = {};
+    if (req.query.from_orderid) {
+        cond_orderid.$gte = parseFloat(req.query.from_orderid);
+        delete req.query.from_orderid;
+    }
+
+    if (req.query.to_orderid) {
+        cond_orderid.$lte = parseFloat(req.query.to_orderid);
+        delete req.query.to_orderid;
     }
 
     if (req.query.fabric_color) {
@@ -57,8 +68,10 @@ router.get('/get', (req, res, next) => {
         delete req.query.record_status
     }
 
+    if (!_.isEmpty(cond_orderid)) { req.query['details.orderid'] = cond_orderid; }
+
     FabricImport.find(req.query)
-        .sort({ 'update_date': 'desc', 'create_date': 'desc' })
+        .sort({ 'create_date': 'desc', 'update_date': 'desc', })
         .exec((err, fabricwarehouse) => {
             if (!err) {
                 return res.status(200).send(fabricwarehouse);
