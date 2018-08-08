@@ -10,16 +10,15 @@ const FabricWarehouseTran = require('../../Schema/Fabric/FabricWarehouseTran');
 
 router.get('/get', (req, res, next) => {
     req.query.record_status = 'O';
-
     let cond_orderid = {};
     let cond_dates = {};
     if (req.query.from_orderid) {
-        cond_orderid.$gte = req.query.from_orderid;
+        cond_orderid.$gte = parseFloat(req.query.from_orderid);
         delete req.query.from_orderid;
     }
 
     if (req.query.to_orderid) {
-        cond_orderid.$lte = req.query.to_orderid;
+        cond_orderid.$lte = parseFloat(req.query.to_orderid);
         delete req.query.to_orderid;
     }
 
