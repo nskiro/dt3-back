@@ -31,7 +31,7 @@ rendercolumns = (columnHeaders, columnStyles, showColumns) => {
             key: _.camelCase(viToEn(columnHeaders[i])),
             name: columnHeaders[i],
             filterable: true,
-            width: columnStyles[i].wpx * 2,
+            width: columnStyles[i].wpx * 1.1,
             visible: _.indexOf(showColumns, _.camelCase(columnHeaders[i])) >= 0 ? true : false,
             resizable: true
         })
@@ -86,25 +86,33 @@ router.post('/add', (req, res, next) => {
     const fullFilePath = `${rootFilePath}/${reportFile.name}`
     reportFile.mv(fullFilePath, err => {
         if (!err) {
-            const dataObj = {
-                reportName: reportFile.name,
-                reportFile: reportFile.name,
-                category: req.body.category,
-                dept: req.body.dept,
-                user: req.body.user,
-                create_date: new Date()
-            };
+            report.findOne({ reportName: reportFile.name })
+                .exec((err, doc) => {
+                    if (!doc) {
+                        const dataObj = {
+                            reportName: reportFile.name,
+                            reportFile: reportFile.name,
+                            category: req.body.category,
+                            dept: req.body.dept,
+                            user: req.body.user,
+                            create_date: new Date()
+                        };
 
-            report.create(dataObj, (err, doc) => {
-                if (!err) {
-                    doc.populate({ path: 'category', match: { record_status: 'O' } }, (err, doc) => {
-                        if (!err) {
-                            return res.status(200).send(doc);
-                        }
-                        return res.status(500).send(err);
-                    });
-                }
-            })
+                        report.create(dataObj, (err, doc) => {
+                            if (!err) {
+                                doc.populate({ path: 'category', match: { record_status: 'O' } }, (err, doc) => {
+                                    if (!err) {
+                                        return res.status(200).send(doc);
+                                    }
+                                    return res.status(500).send(err);
+                                });
+                            }
+                        })
+                    }
+                    else {
+                        return res.status(200).send(doc);
+                    }
+                })
         }
     })
 })
