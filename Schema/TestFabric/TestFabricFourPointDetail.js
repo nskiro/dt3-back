@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const TestFabricFourPointDetail = new mongoose.Schema({
 
     fourpoint_id: { type: mongoose.Schema.Types.ObjectId, ref: 'testfabricfourpoints' },
+    index:{type:Number, default: null},
     no_roll: {type:Number, default: null},
     length_stick :{type:Number,default:null},
     length_actual:{type:Number, default:null},

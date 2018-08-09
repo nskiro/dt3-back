@@ -54,7 +54,7 @@ router.get('/get', (req, res, next) => {
     }
     FabricRelax.find(req.query)
         .sort({ 'create_date': 'desc' })
-        .populate({ path: 'details', match: { record_status: 'O' } })
+        .populate({ path: 'details', match: { record_status: 'O' } , options: { sort: { '_id': 'asc' } } })
         .exec((err, relax_data) => {
             if (!err) {
                 return res.status(200).send({ valid: true, data: relax_data });

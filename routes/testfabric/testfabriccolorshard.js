@@ -48,7 +48,7 @@ router.get('/get', (req, res, next) => {
     }
     FabricColorShard.find(req.query)
         .sort({ 'create_date': 'desc' })
-        .populate({ path: 'details', match: { record_status: 'O' } })
+        .populate({ path: 'details', match: { record_status: 'O' } , options: { sort: { '_id': 'asc' } } })
         .exec((err, colorshard_data) => {
             if (!err) {
                 return res.status(200).send({ valid: true, data: colorshard_data });

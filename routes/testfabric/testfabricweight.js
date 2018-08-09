@@ -53,7 +53,7 @@ router.get('/get', (req, res, next) => {
     }
     FabricWeight.find(req.query)
         .sort({ 'create_date': 'desc' })
-        .populate({ path: 'details', match: { record_status: 'O' } })
+        .populate({ path: 'details', match: { record_status: 'O' } , options: { sort: { '_id': 'asc' } } })
         .exec((err, weight_data) => {
             if (!err) {
                 return res.status(200).send({ valid: true, data: weight_data });
