@@ -57,12 +57,14 @@ router.get('/readexcel/:reportId', (req, res, next) => {
             const showColumns = ['order', 'po', 'line', 'description', 'orderQty', 'factoryQty', 'type'];
             const workbook = XLSX.readFile(`${rootFilePath}/${doc.reportFile}`, { cellStyles: true });
             const first_worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const group_worksheet = workbook.SheetNames.length >= 2 ? workbook.Sheets[workbook.SheetNames[1]] : '';
             const data = XLSX.utils.sheet_to_json(first_worksheet, { defval: '' });
+            const group_data = group_worksheet !== '' ? XLSX.utils.sheet_to_json(group_worksheet, { defval: '' }) : [];
             const newData = data.map((obj) => {
                 return _.mapKeys(obj, (v, k) => _.camelCase(viToEn(k)));
             });
             const columns = rendercolumns(Object.keys(data[0]), first_worksheet["!cols"], showColumns)
-            res.status(200).send({ data: newData, columns: columns });
+            res.status(200).send({ data: newData, columns: columns, group: group_data });
         }
     })
 })
@@ -86,7 +88,7 @@ router.post('/add', (req, res, next) => {
     const fullFilePath = `${rootFilePath}/${reportFile.name}`
     reportFile.mv(fullFilePath, err => {
         if (!err) {
-            report.findOne({ reportName: reportFile.name })
+            report.findOne({ reportName: reportFile.name, record_status: 'O' })
                 .exec((err, doc) => {
                     if (!doc) {
                         const dataObj = {
