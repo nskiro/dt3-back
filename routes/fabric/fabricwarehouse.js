@@ -48,7 +48,6 @@ router.get('/getimports', async (req, res, next) => {
             if (req.query.fabric_color.length != 0) { qr_import_detail['fabric_color'] = {$regex:req.query.fabric_color}; }
             delete req.query.fabric_color;
         }
-
         if (req.query.fabric_type) {
             if (req.query.fabric_type.length != 0) { qr_import_detail['fabric_type'] = {$regex:req.query.fabric_type}; }
             delete req.query.fabric_type;

@@ -60,6 +60,13 @@ router.get('/get', (req, res, next) => {
 
 })
 
+validnumber = (value) => {
+    let nva=0
+    if(value){
+        if(!isNaN(value)){nva=value}
+    }
+    return nva
+}
 
 router.post('/save/', (req, res, next) => {
     const data = req.body
@@ -85,9 +92,29 @@ router.post('/save/', (req, res, next) => {
                         fourpoint.details[i].record_status = 'O'
                     }
                 }
+
+                fourpoint.details[i].no_roll = validnumber(fourpoint.details[i].no_roll)
+                fourpoint.details[i].length_stick = validnumber(fourpoint.details[i].length_stick)
+                fourpoint.details[i].length_actual = validnumber(fourpoint.details[i].length_actual)
+                fourpoint.details[i].yard_actual = validnumber(fourpoint.details[i].yard_actual)
+                fourpoint.details[i].width_stick = validnumber(fourpoint.details[i].width_stick)
+                fourpoint.details[i].width_actual = validnumber(fourpoint.details[i].width_actual)
+                fourpoint.details[i].slub_nep = validnumber(fourpoint.details[i].slub_nep)
+                fourpoint.details[i].fly_spot = validnumber(fourpoint.details[i].fly_spot)
+                fourpoint.details[i].hole_spliy = validnumber(fourpoint.details[i].hole_spliy)
+                fourpoint.details[i].stain_oil = validnumber(fourpoint.details[i].stain_oil)
+                fourpoint.details[i].vline = validnumber(fourpoint.details[i].vline)
+                fourpoint.details[i].bare = validnumber(fourpoint.details[i].bare)
+                fourpoint.details[i].crease_mark = validnumber(fourpoint.details[i].crease_mark)
+                fourpoint.details[i].uneven_dyed = validnumber(fourpoint.details[i].uneven_dyed)
+                fourpoint.details[i].total_point = validnumber(fourpoint.details[i].total_point)
+                fourpoint.details[i].defective_point = validnumber(fourpoint.details[i].defective_point)
+
                 fourpoint.details[i].fourpoint_id = fourpoint._id
                 detail_ids.push(fourpoint.details[i]._id)
             }
+
+
 
             await saveFourPointDetails(fourpoint.details);
 

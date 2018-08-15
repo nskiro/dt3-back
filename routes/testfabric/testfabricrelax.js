@@ -97,18 +97,18 @@ router.post('/save/', (req, res, next) => {
             if (find_rs && find_rs.length > 0) {
                 let u_relax = { ...find_rs[0]._doc }
                 u_relax.update_date = new Date()
-                u_relax.relax = relax.relax ? parseFloat(relax.relax).toFixed(2) : 0.0,
-                    u_relax.condition_hours = relax.condition_hours ? parseFloat(relax.condition_hours) * 1.0 : 0.0,
-                    u_relax.note = relax.note,
-                    u_relax.details = detail_ids
+                u_relax.relax = relax.relax ? parseFloat(relax.relax).toFixed(2) : 0.0
+                u_relax.condition_hours = relax.condition_hours ? parseFloat(relax.condition_hours) * 1.0 : 0.0
+                u_relax.note = relax.note
+                u_relax.details = detail_ids
 
                 if (relax.start_date) {
                     const start_date = moment(relax.start_date, 'MM/DD/YYYY').toDate()
                     u_relax.start_date = start_date
                 }
                 if (relax.end_date) {
-                    const end_date = moment(relax.end_date, 'MM/DD/YYYY').toDate()
-                    u_relax.end_date = end_date
+                    const end_date = moment(relax.end_date, 'MM/DD/YYYY').toDate();
+                    u_relax.end_date = end_date;
                 }
 
                 await saveRelax(u_relax)
